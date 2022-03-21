@@ -1,0 +1,40 @@
+{# 首页表格内容填写宏 #}
+{% macro tr_index(id,name,begin,end,state,progress) %}
+    <tr>
+        <td>{{ id }}</td>
+        <td>{{ name }}</td>
+        <td>{{ begin }}</td>
+        <td>{{ end }}</td>
+        <td><span class='label label-{{ state }}'>{{ state }}</span></td>
+        <td>
+          <div class="progress progress-striped progress-sm">
+            <div class="progress-bar progress-bar-warning" style="width: {{ progress }}%;"></div>
+          </div>
+        </td>
+    </tr>
+{% endmacro %}
+{# 查询页表格内容填写宏 #}
+{% macro tr_detail(id,problem,unitname,category1,category2,date,modificationstate,modificationdate) %}
+    <tr>
+        <td>
+            <label class="lyear-checkbox checkbox-primary">
+                <input type="checkbox" name={{ id }} value={{ id }}><span></span>{# 选择框 #}
+            </label>
+        </td>
+        <td>{{ id }}</td>
+        <td>{{ problem }}</td>
+        <td>{{ unitname }}</td>
+        <td>{{ category1 }}</td>
+        <td>{{ category2 }}</td>
+        <td>{{ date }}</td>
+        <td class="text-{{ 'success' if modificationstate else 'danger' }}">{{ '已完成' if modificationstate else '未整改' }}</td>
+        <td>{{ modificationdate if modificationdate else '' }}</td>
+        <td>
+            <div class="btn-group">
+                <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                <a class="btn btn-xs btn-default" href="#!" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
+                <a class="btn btn-xs btn-default" href="#!" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+            </div>
+        </td>
+    </tr>
+{% endmacro %}

@@ -1,0 +1,175 @@
+{# 页面一 #}
+{% extends 'base.html' %}
+{% import 'macro.html' as mcr %}
+{% block page_title %}
+    <span class="navbar-page-title"> 页面一 </span>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-toolbar clearfix">
+                <form>
+                    <div class="form-group">
+                        <div class="row m-b-5">
+                            <div class="col-md-4">
+                                <select class="form-control" name="unit" id="unit">
+                                    <option selected="selected" style='display: none' value=''>选择单位</option>
+                                    {% for unit in units %}
+                                        <option value="{{ unit['id'] }}">{{ unit['unitname'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control" name="category1" id="category1">
+                                    <option selected="selected" style='display: none' value=''>选择一级分类</option>
+                                    {% for category1 in category1s %}
+                                        <option value="{{ category1['id'] }}"
+                                                onclick="changefield('category1','category2','{{ url_for('user.changeselectfield') }}')">{{ category1['category'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select class="form-control" name="category2" id="category2">
+                                    {# 动态加载 #}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row m-b-5">
+                            <div class="col-md-4">
+                                <select class="form-control" name="modificationstate" id="modificationstate">
+                                    <option selected="selected" style='display: none' value=''>选择整改情况</option>
+                                    <option value="0">未整改</option>
+                                    <option value="1">已整改</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" name="datefilter" class="form-control" placeholder=" 选择日期范围">
+                            </div>
+                            <div class="col-md-4">
+                                <input class="btn btn-primary col-md-6" type="submit" value="查询">
+                                <input class="btn btn-default col-md-6" type="reset"  value="重置">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>{# 块-工具栏 #}
+            <div class="card-body">{# 块-主体 #}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <h1 align="center">检查情况汇总</h1>
+                        <p align="right">共筛选出{{ paginate.total }}条数据</p>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <label class="lyear-checkbox checkbox-primary">
+                                        <input type="checkbox" id="check-all"><span></span>
+                                    </label>
+                                </th>
+                                <th>id</th>
+                                <th>问题</th>
+                                <th>单位</th>
+                                <th>类型</th>
+                                <th>子类型</th>
+                                <th>时间</th>
+                                <th>整改状态</th>
+                                <th>整改时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for con in contents %}
+                                {{ mcr.tr_detail(con.id,con.problem,con.unit.unitname,con.category1.category,
+                                con.category2.category,con.date,con.modificationstate,con.modificationdate) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>{# 表格内容 #}
+                <div class="text-center">
+                    <ul class="pagination">
+                        <li>
+                            {% if paginate.has_prev %}
+                                <a href="{{ url_for('user.detail', page=paginate.prev_num, unit=uid, category1=c1id, category2=c2id) }}">«上一页</a>
+                            {% else %}
+                                <a class="disabled">«上一页</a>
+                            {% endif %}
+                        </li>
+                        {% for i in paginate.iter_pages() %}
+                            <li>
+                                <a href="{{ url_for('user.detail', page=i, unit=uid, category1=c1id, category2=c2id) }}">{{ i }}</a>
+                            </li>
+                        {% endfor %}
+                        <li>
+                            {% if paginate.has_next %}
+                                <a href="{{ url_for('user.detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id) }}">下一页»</a>
+                            {% else %}
+                                <a href="#">下一页»</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_ext %}
+    <script>
+        $(function () {
+            $(".pagination").find("li").each(function () {
+                var a = $(this).find("a:first")[0];
+                if ($(a).attr("href") === location.pathname+location.search) {
+                    $(this).addClass("active");
+                } else {
+                    $(this).removeClass("active");
+                }
+            });
+        });
+        function changefield(choose,target,url) {
+            var c1data;
+            var select = document.getElementById(choose);
+            $("#"+target).html('');//每次重新选择当前列表框，就清空下一级列表框。
+            for (i = 0; i < select.length; i++) {
+                if (select[i].selected) { //判断被选中项
+                    c1id = select[i].value;
+                    c1data = {
+                        "c1id": c1id
+                    };
+                    $.ajax({//发起ajax请求
+                        url : url,
+                        type : "POST",
+                        data : JSON.stringify(c1data),
+                        contentType : "application/json; charset=UTF-8",
+                        success : function (data) {
+                            if(data){
+                                $("<option selected='selected' disabled='disabled'  style='display: none' value=''>请选择二级分类</option>").appendTo("#"+target);
+                                for(i=0;i<data.length;i++){
+                                    $("<option value='"+data[i].id+"'>"+data[i].category+"</option>").appendTo("#"+target)
+                                }
+                            }else {
+                                alert('error')
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    $(document).ready(function(){
+        // 输入最初为空
+        $('input[name="datefilter"]').daterangepicker({
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: '清空'
+            }
+        });
+
+        $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
+    });
+    </script>
+{% endblock %}
