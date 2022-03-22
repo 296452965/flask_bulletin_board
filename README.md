@@ -9,6 +9,12 @@
 ![表格页面](https://user-images.githubusercontent.com/31033705/159453554-8d9332fb-c6a8-4c07-bad8-9432d0c5ff90.png)
 ![表单页面](https://user-images.githubusercontent.com/31033705/159453565-5b15d185-f76c-4d08-8fa2-9ff5277eb65d.png)
 ![登录页面](https://user-images.githubusercontent.com/31033705/159454209-93cfcc2d-3c04-4b81-b8a9-909e506daff2.png)
+## 项目如何run？
+bulletin_board.py是主文件，运行即可。
+## TODOLIST
+1.用户页面基于权限展示不同数据
+2.管理员对用户账户的管理
+3.导出到excel
 ## 与我联系
 - 项目还在进行中，交流沟通可以加微信：cyk-21
 - CSDN博客：一个甜甜的大橙子
