@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, url_for, render_template
 from flask_migrate import Migrate  # ORM迁移，修改ORM对应的模型，然后再把模型映射到数据库中
 from exts import db  # 避免循环引用
 import login.views
@@ -22,6 +22,6 @@ def hello_world():
 
 
 if __name__ == '__main__':
-    # server = make_server('127.0.0.1', 5000, app)
-    # server.serve_forever()
-    app.run('127.0.0.1', 5000)
+    server = make_server('127.0.0.1', 5000, app)
+    server.serve_forever()
+    app.run()
