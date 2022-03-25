@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, session, redirect, url_for
+from flask import Blueprint, render_template, jsonify, request, session, redirect, url_for, flash
 from flask.views import MethodView
 from exts import db
 from models import DataBar, DataLine, Content, Category1, Category2, Unit
@@ -19,7 +19,6 @@ def changeselectfield():
             dic['id'] = c.id
             dic['category'] = c.category
             li.append(dic.copy())
-        print("!!!!!!!!!!!")
         return jsonify(li)
     else:
         return {}
@@ -43,7 +42,7 @@ def index_bar():
         dic['data'] = c.data
         dic['label'] = c.label
         li.append(dic.copy())
-    print(li)
+    # print(li)
     return jsonify(li)
 
 
@@ -56,8 +55,31 @@ def index_line():
         dic['data'] = c.data
         dic['label'] = c.label
         li.append(dic.copy())
-    print(li)
+    # print(li)
     return jsonify(li)
+
+
+# 删除指定id信息
+@bp.route('del/<id>/')
+def delete_content(id=None):
+    del_con = Content.query.filter_by(id=id).first()
+    db.session.delete(del_con)
+    db.session.commit()
+    flash('信息删除成功')
+    return redirect(url_for('user.detail'))
+
+
+@bp.route('edit', methods=["get", "post"])
+def edit_content():
+    if request.method == 'POST':
+        content_id = request.form['id']
+        state = request.form['modificationstate']
+        date = request.form['modificationdate']
+    if request.method == 'POST':
+        print(request.form.get('confirm'))
+        state = 1 if request.form.get('confirm') == 'on' else 0
+        rowid = request.form.get('rowid')
+    return f'{content_id} {state} {date}'
 
 
 # 页面二
@@ -83,31 +105,24 @@ class DetailView(MethodView):
         c2id = int(request.args.get('category2')) if request.args.get('category2') else None
         page = int(request.args.get('page', 1))  # 获取第‘page’页数据
         # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
-        datefilter = request.args.get('datefilter').split(' - ') if  request.args.get('datefilter') else None
-        per_page = 10  # 数据分页，每页显示2条数据
-        # 根据参数选择查询过滤方式
+        datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
+        per_page = 10  # 数据分页，每页显示10条数据
+        # 根据问题分类选择确定过滤方式
         if c2id:
-            if uid:
-                paginate = Content.query.filter_by(uid=uid, c1id=c1id, c2id=c2id)
-            else:
-                paginate = Content.query.filter_by(c1id=c1id, c2id=c2id)
+            paginate = Content.query.filter_by(c1id=c1id, c2id=c2id)
+        elif c1id:
+            paginate = Content.query.filter_by(c1id=c1id)
         else:
-            if c1id:
-                if uid:
-                    paginate = Content.query.filter_by(uid=uid, c1id=c1id)
-                else:
-                    paginate = Content.query.filter_by(c1id=c1id)
-            else:
-                if uid:
-                    paginate = Content.query.filter_by(uid=uid)
-                else:
-                    paginate = Content.query.filter_by()
+            paginate = Content.query.filter_by()
+        # 根据是否选择单位确定过滤方式
+        if uid:
+            paginate = paginate.filter_by(uid=uid)
+        # 根据是否选择日期范围确定过滤方式
         if datefilter:
-            paginate = paginate.filter(Content.date.between(datefilter[0], datefilter[1])).paginate(page, per_page)
-        else:
-            paginate = paginate.paginate(page, per_page)
+            paginate = paginate.filter(Content.date.between(datefilter[0], datefilter[1]))
+        paginate = paginate.paginate(page, per_page)
         contents = paginate.items
-        print(contents)
+        print(paginate)
         category1s = db.session.query(Category1)
         units = Unit.query.all()
         return render_template('detail.html', contents=contents, paginate=paginate, category1s=category1s, units=units,
@@ -160,6 +175,16 @@ class AddView(MethodView):
         uid = request.form['unit']
         c1id = request.form['category1']
         c2id = request.form['category2']
+        date = request.form['date']
+        problem = request.form['problem']
+        modificationstate = bool(int(request.form['modificationstate']))
+        content = Content(problem, c1id, c2id, uid, date, modificationstate, modificationdate=None)
+        db.session.add(content)
+        db.session.commit()
+        # print(content.id)
+        if content.id is not None:
+            flash(f'您已成功添加第{content.id}条数据')
+        return redirect(url_for('user.add'))
 
 
 bp.add_url_rule('add/', view_func=AddView.as_view('add'))

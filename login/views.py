@@ -1,5 +1,6 @@
 from flask import Blueprint, session, redirect, url_for, request, flash, render_template
-from DBFunc import query_sql
+from models import Admin, User
+
 bp = Blueprint('login', __name__, url_prefix='/')
 
 
@@ -10,23 +11,20 @@ def login():
         return redirect(url_for('user.index'))
     elif session.get('role', None) == 'admin':
         return redirect(url_for('admin.index'))
-    if request.method == 'POST':
+    elif request.method == 'POST':
         username = request.form.get('username')
         pwd = request.form.get('password')
         role = request.form.get('role')
         if role == '1':  # 1代表管理员
-            sql = 'SELECT count(*) AS Count FROM AdminInfo WHERE UserName=? and PassWord=?'
-            result = query_sql(sql, (username, pwd), one=True)
-
-            if int(result.get('Count')) > 0:
+            result = Admin.query.filter_by(username=username, password=pwd).first()
+            if result is not None:
                 session['username'] = username
                 session['role'] = 'admin'
                 return redirect(url_for('admin.index'))
             flash('用户名或密码错误！')
         if role == '0':  # 2代表用户
-            sql = 'SELECT count(*) AS Count FROM UserInfo WHERE UserName=? and PassWord=?'
-            result = query_sql(sql, (username, pwd), one=True)
-            if int(result.get('Count')) > 0:
+            result = User.query.filter_by(username=username, password=pwd).first()
+            if result is not None:
                 session['username'] = username
                 session['role'] = 'user'
                 return redirect(url_for('user.index'))

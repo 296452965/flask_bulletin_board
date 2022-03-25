@@ -65,7 +65,7 @@
                                         <input type="checkbox" id="check-all"><span></span>
                                     </label>
                                 </th>
-                                <th>id</th>
+                                <th>序号</th>
                                 <th>问题</th>
                                 <th>单位</th>
                                 <th>类型</th>
@@ -78,8 +78,8 @@
                         </thead>
                         <tbody>
                             {% for con in contents %}
-                                {{ mcr.tr_detail(con.id,con.problem,con.unit.unitname,con.category1.category,
-                                con.category2.category,con.date,con.modificationstate,con.modificationdate) }}
+                                {{ mcr.tr_detail(loop.index,con.problem,con.unit.unitname,con.category1.category,
+                                con.category2.category,con.date,con.modificationstate,con.modificationdate,con.id) }}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -102,7 +102,7 @@
                             {% if paginate.has_next %}
                                 <a href="{{ url_for('user.detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id) }}">下一页»</a>
                             {% else %}
-                                <a href="#">下一页»</a>
+                                <a class="disabled">下一页»</a>
                             {% endif %}
                         </li>
                     </ul>
@@ -153,23 +153,36 @@
                 }
             }
         }
-    $(document).ready(function(){
-        // 输入最初为空
-        $('input[name="datefilter"]').daterangepicker({
-            autoUpdateInput: false,
-            locale: {
-                cancelLabel: '清空'
+    </script>
+    <script>
+        $(document).ready(function(){
+            // 输入最初为空
+            $('input[name="datefilter"]').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: '清空'
+                }
+            });
+
+            $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+
+            $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+
+        });
+    </script>
+    <script type="text/javascript">
+        $('#contentModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var recipient = button.data('whatever');
+            if(recipient==='edit'){
+                var modal = $(this);
+                {#modal.find('.modal-title')#}
             }
-        });
 
-        $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
-
-        $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val('');
-        });
-
-    });
+        })
     </script>
 {% endblock %}

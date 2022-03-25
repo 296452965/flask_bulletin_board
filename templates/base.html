@@ -5,15 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>首页 - XX管理系统</title>
     <link rel="icon" href="/images/logo-ico.png" type="image/ico">
-    {#<link href=/css/bootstrap.min.css rel="stylesheet">#}
-    {#<link href=/css/materialdesignicons.min.css rel="stylesheet">#}
-    {#<link href=/css/style.min.css rel="stylesheet">#}
-
     <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='js/bootstrap-datepicker/bootstrap-datepicker3.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.min.css') }}">
+    <style>
+        #logo a {
+        font-size: 22px;
+        line-height: 68px;
+        white-space: nowrap;
+        color: #4d5259;
+        }
+        [data-logobg*='color_'] #logo a {
+            color: #fff;
+        }
+        @media (min-width: 1024px) {
+            .lyear-layout-sidebar.lyear-aside-open #logo a {
+                display: block;
+                width: 45px;
+                height: 68px;
+                letter-spacing: 3px;
+                margin: 0 auto;
+                overflow: hidden;
+                text-align: center;
+            }
+
+            .lyear-layout-sidebar-close .lyear-layout-sidebar:hover #logo a {
+                width: 100%;
+                margin: 0;
+                letter-spacing: 0px;
+            }
+        }
+    </style>
+    {% block style_ext %}{% endblock %}
 </head>
+
+
 <body>
     <div class="lyear-layout-web">
       <div class="lyear-layout-container">
@@ -22,7 +50,7 @@
 
           <!-- logo -->
           <div id="logo" class="sidebar-header">
-            <a href={{ url_for('user.index') }}><img src="/images/logo-sidebar.png" title="LightYear" alt="LightYear" /></a>
+            <a href={{ url_for('user.index') }}>后台管理系统</a>
           </div>
           <div class="lyear-layout-sidebar-scroll">
 
@@ -225,9 +253,11 @@
     <script type="text/javascript" src=/js/jquery.min.js></script>
     <script type="text/javascript" src=/js/bootstrap.min.js></script>
     <script type="text/javascript" src=/js/perfect-scrollbar.min.js></script>
-    <script type="text/javascript" src=/js/bootstrap-datetimepicker/moment.min.js></script><!--这个文件在原模板的bootstrap-datetimepicker中有，这里将它挪出来了-->
+    <script src="/js/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script src="/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+    <script type="text/javascript" src=/js/bootstrap-datetimepicker/moment.min.js></script>
     <script type="text/javascript" src=/js/bootstrap-datetimepicker/locale/zh-cn.js></script>
-    <script type="text/javascript" src="http://libs.itshubao.com/bootstrap-daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src=/js/bootstrap-daterangepicker/daterangepicker.min.js></script>
     <script type="text/javascript" src=/js/main.min.js></script>
     {% block js_ext %}
     {% endblock %}

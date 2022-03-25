@@ -9,13 +9,22 @@
         <div class="card">
             <div class="card-header"><h4>填报信息</h4></div>
             <div class="card-body">
-
+                {% with messages = get_flashed_messages() %}
+                    {%  if messages %}
+                        {% for msg in messages %}
+                            <div class="alert alert-warning">
+                                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                {{ msg }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <form class="form-horizontal" action="{{ url_for('user.add') }}" method="post">
                     <div class="form-group">
-                        <label class="col-md-12" for="example-select">选择单位</label>
+                        <label class="col-md-12" for="unit">选择单位</label>
                         <div class="col-md-12">
                             <select class="form-control" name="unit" id="unit">
-                                <option selected="selected" style='display: none' value=''>请选择</option>
+                                <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for unit in units %}
                                     <option value="{{ unit['id'] }}">{{ unit['unitname'] }}</option>
                                 {% endfor %}
@@ -23,10 +32,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-12" for="example-select">选择一级分类</label>
+                        <label class="col-md-12" for="category1">选择一级分类</label>
                         <div class="col-md-12">
                             <select class="form-control" name="category1" id="category1">
-                                <option selected="selected" style='display: none' value=''>请选择</option>
+                                <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for category1 in category1s %}
                                     <option value="{{ category1['id'] }}" onclick="changefield('category1','category2',
                                             '{{ url_for('user.changeselectfield') }}')">{{ category1['category'] }}</option>
@@ -35,34 +44,36 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-12" for="example-select">选择二级分类</label>
+                        <label class="col-md-12" for="category2">选择二级分类</label>
                         <div class="col-md-12">
                             <select class="form-control" name="category2" id="category2">
-                                <option selected="selected" style='display: none' value=''>请选择</option>
+                                <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {# 动态加载 #}
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-md-12" for="date">选择日期</label>
                         <div class="col-md-12">
-                            <label class="col-md-12" for="example-select">选择日期范围</label>
-                            <input type="text" name="datefilter" class="form-control" placeholder=" 选择日期范围">
+                            <input class="form-control js-datepicker m-b-10" type="text" id="date" name="date"
+                                   placeholder="年-月-日（不能为空）" value="" data-date-format="yyyy-mm-dd">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-12" for="example-textarea-input">具体问题</label>
+                        <label class="col-md-12" for="problem">具体问题</label>
                         <div class="col-md-12">
-                            <textarea class="form-control" id="example-textarea-input" name="example-textarea-input" rows="6" placeholder="内容.."></textarea>
+                            <textarea class="form-control" id="problem" name="problem"
+                                      rows="6" placeholder="内容......（不能为空）"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-12">选择整改情况</label>
                         <div class="col-md-12">
-                            <label class="radio-inline" for="example-inline-radio1">
-                                <input type="radio" id="example-inline-radio1" name="example-inline-radios" value="option1">未整改
+                            <label class="radio-inline" for="modificationstate">
+                                <input type="radio" id="modificationstate" name="modificationstate" value="0">未整改
                             </label>
-                            <label class="radio-inline" for="example-inline-radio2">
-                                <input type="radio" id="example-inline-radio2" name="example-inline-radios" value="option2">已整改
+                            <label class="radio-inline" for="modificationstate">
+                                <input type="radio" id="modificationstate" name="modificationstate" value="1">已整改
                             </label>
                         </div>
                     </div>
@@ -110,28 +121,5 @@
                 }
             }
         }
-        function greeting() {
-            alert('yes')
-        }
-        {# 日期范围选择函数 #}
-        $(document).ready(function(){
-            // 输入最初为空
-            $('input[name="datefilter"]').daterangepicker({
-                autoUpdateInput: false,
-                locale: {
-                    cancelLabel: '清空'
-                }
-            });
-
-            $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-            });
-
-            $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
-                $(this).val('');
-            });
-
-        });
-
     </script>
 {% endblock %}

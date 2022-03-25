@@ -14,14 +14,14 @@
     </tr>
 {% endmacro %}
 {# 查询页表格内容填写宏 #}
-{% macro tr_detail(id,problem,unitname,category1,category2,date,modificationstate,modificationdate) %}
+{% macro tr_detail(index,problem,unitname,category1,category2,date,modificationstate,modificationdate,id) %}
     <tr>
         <td>
             <label class="lyear-checkbox checkbox-primary">
-                <input type="checkbox" name={{ id }} value={{ id }}><span></span>{# 选择框 #}
+                <input type="checkbox" name={{ index }} value={{ index }}><span></span>{# 选择框 #}
             </label>
         </td>
-        <td>{{ id }}</td>
+        <td>{{ index }}</td>
         <td>{{ problem }}</td>
         <td>{{ unitname }}</td>
         <td>{{ category1 }}</td>
@@ -31,9 +31,39 @@
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
             <div class="btn-group">
-                <a class="btn btn-xs btn-default" href="#!" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
-                <a class="btn btn-xs btn-default" href="#!" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
-                <a class="btn btn-xs btn-default" href="#!" title="删除" data-toggle="tooltip"><i class="mdi mdi-window-close"></i></a>
+                <a class="{{ "btn btn-xs btn-yellow" if modificationstate == 0 else "btn btn-xs btn-yellow disabled"}}" href="#!" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
+                <div class="modal fade" id="contentModal{{ id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="exampleModalLabel">编辑整改状态</h4>
+                            </div>
+                            <form action="{{ url_for('user.edit_content') }}" method="post">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <input type="hidden" name="id" value="{{ id }}">
+                                        <label class="col-md-8">确认整改（已整改请勾选，未整改不勾选）</label>
+                                        <input type="checkbox" name="modificationstate" id="modificationstate" {{ 'checked = checked' if modificationstate == 1 else '' }}>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-12">整改日期</label>
+                                        <input class="form-control js-datepicker m-b-10" type="text" id="modificationdate" name="modificationdate"
+                                               placeholder="{{ modificationdate if modificationdate else '注意：提交整改日期不能为空' }}" value="" data-date-format="yyyy-mm-dd">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                    <button type="submit" class="btn btn-primary">确定修改</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-xs btn-warning" href="#!" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
+                <a class="btn btn-xs btn-danger" href="{{ url_for('user.delete_content',id=id) }}" title="删除" data-toggle="tooltip"
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>
+                </a>
             </div>
         </td>
     </tr>
