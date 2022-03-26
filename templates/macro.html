@@ -1,4 +1,4 @@
-{# 首页表格内容填写宏 #}
+{# 管理员首页表格内容填写宏 #}
 {% macro tr_index(id,name,begin,end,state,progress) %}
     <tr>
         <td>{{ id }}</td>
@@ -13,7 +13,7 @@
         </td>
     </tr>
 {% endmacro %}
-{# 查询页表格内容填写宏 #}
+{# 管理员查询页表格内容填写宏 #}
 {% macro tr_detail(index,problem,unitname,category1,category2,date,modificationstate,modificationdate,id) %}
     <tr>
         <td>
@@ -39,7 +39,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                                 <h4 class="modal-title" id="exampleModalLabel">编辑整改状态</h4>
                             </div>
-                            <form action="{{ url_for('user.edit_content') }}" method="post">
+                            <form action="{{ url_for('admin.edit_content') }}" method="post">
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ id }}">
@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 <a class="btn btn-xs btn-warning" href="#!" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
-                <a class="btn btn-xs btn-danger" href="{{ url_for('user.delete_content',id=id) }}" title="删除" data-toggle="tooltip"
+                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.delete_content',id=id) }}" title="删除" data-toggle="tooltip"
                    onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>
                 </a>
             </div>

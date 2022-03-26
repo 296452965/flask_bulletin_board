@@ -1,5 +1,5 @@
 {# 信息填报页面 #}
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 {% block page_title %}
     <span class="navbar-page-title"> 信息填报页面 </span>
 {% endblock %}
@@ -19,7 +19,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <form class="form-horizontal" action="{{ url_for('user.add') }}" method="post">
+                <form class="form-horizontal" action="{{ url_for('admin.add') }}" method="post">
                     <div class="form-group">
                         <label class="col-md-12" for="unit">选择单位</label>
                         <div class="col-md-12">
@@ -38,7 +38,7 @@
                                 <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for category1 in category1s %}
                                     <option value="{{ category1['id'] }}" onclick="changefield('category1','category2',
-                                            '{{ url_for('user.changeselectfield') }}')">{{ category1['category'] }}</option>
+                                            '{{ url_for('admin.changeselectfield') }}')">{{ category1['category'] }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -66,17 +66,17 @@
                                       rows="6" placeholder="内容......（不能为空）"></textarea>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-md-12">选择整改情况</label>
-                        <div class="col-md-12">
-                            <label class="radio-inline" for="modificationstate">
-                                <input type="radio" id="modificationstate" name="modificationstate" value="0">未整改
-                            </label>
-                            <label class="radio-inline" for="modificationstate">
-                                <input type="radio" id="modificationstate" name="modificationstate" value="1">已整改
-                            </label>
-                        </div>
-                    </div>
+{#                    <div class="form-group">#}
+{#                        <label class="col-md-12">选择整改情况</label>#}
+{#                        <div class="col-md-12">#}
+{#                            <label class="radio-inline" for="modificationstate">#}
+{#                                <input type="radio" id="modificationstate" name="modificationstate" value="0">未整改#}
+{#                            </label>#}
+{#                            <label class="radio-inline" for="modificationstate">#}
+{#                                <input type="radio" id="modificationstate" name="modificationstate" value="1">已整改#}
+{#                            </label>#}
+{#                        </div>#}
+{#                    </div>#}
                     <div class="form-group">
                         <div class="col-md-12">
                             <button class="btn btn-primary col-md-1 col-md-offset-5" type="submit">提交</button>

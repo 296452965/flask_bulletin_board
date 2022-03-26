@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
-    <span class="navbar-page-title"> 用户首页 </span>
+    <span class="navbar-page-title"> 管理员首页 </span>
 {% endblock %}
 {% block content %}
       <div class="container-fluid">
@@ -127,7 +127,7 @@
 <script type="text/javascript" src=/js/Chart.js></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $.get('/user/index/bar').done(function (results) {
+    $.get('/admin/index/bar').done(function (results) {
         var labels = [], data=[];
         for(var result in results)
         {
@@ -151,7 +151,7 @@ $(document).ready(function() {
             }
         });
     });
-    $.get('/user/index/line').done(function (results) {
+    $.get('/admin/index/line').done(function (results) {
         var labels = [], data=[];
         for(var result in results)
         {

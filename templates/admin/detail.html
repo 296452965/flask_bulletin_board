@@ -1,5 +1,5 @@
 {# 页面一 #}
-{% extends 'base.html' %}
+{% extends 'admin/base_admin.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
     <span class="navbar-page-title"> 页面一 </span>
@@ -24,7 +24,7 @@
                                     <option selected="selected" style='display: none' value=''>选择一级分类</option>
                                     {% for category1 in category1s %}
                                         <option value="{{ category1['id'] }}"
-                                                onclick="changefield('category1','category2','{{ url_for('user.changeselectfield') }}')">{{ category1['category'] }}</option>
+                                                onclick="changefield('category1','category2','{{ url_for('admin.changeselectfield') }}')">{{ category1['category'] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -54,6 +54,16 @@
                 </form>
             </div>{# 块-工具栏 #}
             <div class="card-body">{# 块-主体 #}
+                {% with messages = get_flashed_messages() %}
+                    {%  if messages %}
+                        {% for msg in messages %}
+                            <div class="alert alert-warning">
+                                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                {{ msg }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <h1 align="center">检查情况汇总</h1>
@@ -88,19 +98,19 @@
                     <ul class="pagination">
                         <li>
                             {% if paginate.has_prev %}
-                                <a href="{{ url_for('user.detail', page=paginate.prev_num, unit=uid, category1=c1id, category2=c2id) }}">«上一页</a>
+                                <a href="{{ url_for('admin.detail', page=paginate.prev_num, unit=uid, category1=c1id, category2=c2id) }}">«上一页</a>
                             {% else %}
                                 <a class="disabled">«上一页</a>
                             {% endif %}
                         </li>
                         {% for i in paginate.iter_pages() %}
                             <li>
-                                <a href="{{ url_for('user.detail', page=i, unit=uid, category1=c1id, category2=c2id) }}">{{ i }}</a>
+                                <a href="{{ url_for('admin.detail', page=i, unit=uid, category1=c1id, category2=c2id) }}">{{ i }}</a>
                             </li>
                         {% endfor %}
                         <li>
                             {% if paginate.has_next %}
-                                <a href="{{ url_for('user.detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id) }}">下一页»</a>
+                                <a href="{{ url_for('admin.detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id) }}">下一页»</a>
                             {% else %}
                                 <a class="disabled">下一页»</a>
                             {% endif %}

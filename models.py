@@ -105,7 +105,7 @@ class Category2(db.Model):
 
 # 情况登记表，问题，问题类型编号，单位编号，发生时间
 class Content(db.Model):
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     problem = db.Column(db.Text)
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))

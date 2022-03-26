@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>首页 - XX管理系统</title>
+    <title>XX管理系统</title>
     <link rel="icon" href="/images/logo-ico.png" type="image/ico">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/materialdesignicons.min.css') }}">
@@ -50,20 +50,20 @@
 
           <!-- logo -->
           <div id="logo" class="sidebar-header">
-            <a href={{ url_for('user.index') }}>后台管理系统</a>
+            <a href={{ url_for('admin.index') }}>信息管理系统</a>
           </div>
           <div class="lyear-layout-sidebar-scroll">
 
             <nav class="sidebar-main">
               <ul class="nav nav-drawer">
-                <li class="nav-item active"> <a href={{ url_for('user.index') }}><i class="mdi mdi-home"></i> 首页</a> </li>
+                <li class="nav-item active"> <a href={{ url_for('admin.index') }}><i class="mdi mdi-home"></i> 首页</a> </li>
                 <li class="nav-item nav-item-has-subnav">
                   <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 列表一 </a>
                   <ul class="nav nav-subnav">
-                    <li> <a href={{ url_for('user.detail') }}>页面一</a> </li>
-                    <li> <a href={{ url_for('user.analysis') }}>页面二</a> </li>
-                    <li> <a href="{{ url_for('user.add') }}">填报信息页面</a></li>
-                    <li> <a href={{ url_for('user.test') }}>测试页面</a> </li>
+                    <li> <a href={{ url_for('admin.detail') }}>页面一</a> </li>
+                    <li> <a href={{ url_for('admin.analysis') }}>页面二</a> </li>
+                    <li> <a href="{{ url_for('admin.add') }}">填报信息页面</a></li>
+                    <li> <a href={{ url_for('admin.test') }}>测试页面</a> </li>
                   </ul>
                 </li>
               </ul>
@@ -99,7 +99,7 @@
                     <span>用户 <span class="caret"></span></span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-right">
-                    <li> <a href={{ url_for('user.profile') }}><i class="mdi mdi-account"></i> 个人信息</a> </li>
+                    <li> <a href={{ url_for('admin.profile') }}><i class="mdi mdi-account"></i> 个人信息</a> </li>
                     <li> <a href="#"><i class="mdi mdi-lock-outline"></i> 修改密码</a> </li>
                     <li class="divider"></li>
                     <li> <a href={{ url_for('login.logout') }}><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>

@@ -1,6 +1,5 @@
 from flask import Blueprint, session, redirect, url_for, request, flash, render_template
 from models import Admin, User
-
 bp = Blueprint('login', __name__, url_prefix='/')
 
 
@@ -22,14 +21,14 @@ def login():
                 session['role'] = 'admin'
                 return redirect(url_for('admin.index'))
             flash('用户名或密码错误！')
-        if role == '0':  # 2代表用户
+        if role == '0':  # 0代表用户
             result = User.query.filter_by(username=username, password=pwd).first()
             if result is not None:
                 session['username'] = username
                 session['role'] = 'user'
                 return redirect(url_for('user.index'))
             flash('用户名或密码错误！')
-    return render_template('login.html')
+    return render_template('login/login.html')
 
 
 # 退出，结束session，返回至登录页面
