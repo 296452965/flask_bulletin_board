@@ -1,3 +1,4 @@
+基于flask+mysql+bootstrap的信息管理系统
 # 基于flask+mysql的信息管理系统
 ## 项目特点
 - 由于现在只会一些基础的H5语言，会简单使用Bootstrap框架，因此前台页面使用了别人制作好的模板页面，借鉴了[光年模板](http://www.itshubao.com/doc-lyear/lyear.html)
