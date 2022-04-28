@@ -34,7 +34,7 @@
             .lyear-layout-sidebar-close .lyear-layout-sidebar:hover #logo a {
                 width: 100%;
                 margin: 0;
-                letter-spacing: 0px;
+                letter-spacing: 0;
             }
         }
     </style>
@@ -56,14 +56,22 @@
 
             <nav class="sidebar-main">
               <ul class="nav nav-drawer">
-                <li class="nav-item active"> <a href={{ url_for('admin.index') }}><i class="mdi mdi-home"></i> 首页</a> </li>
+                <li class="nav-item" id="index">
+                    <a href={{ url_for('admin.index') }}><i class="mdi mdi-home"></i> 首页</a>
+                </li>
                 <li class="nav-item nav-item-has-subnav">
-                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 列表一 </a>
+                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 问题管理 </a>
                   <ul class="nav nav-subnav">
-                    <li> <a href={{ url_for('admin.detail') }}>页面一</a> </li>
-                    <li> <a href={{ url_for('admin.analysis') }}>页面二</a> </li>
-                    <li> <a href="{{ url_for('admin.add') }}">填报信息页面</a></li>
-                    <li> <a href={{ url_for('admin.test') }}>测试页面</a> </li>
+                    <li id="detail"> <a href={{ url_for('admin.detail') }}>问题列表</a> </li>
+                    <li> <a href={{ url_for('admin.analysis') }}>图表分析</a> </li>
+                    <li> <a href="{{ url_for('admin.add') }}">问题填报</a> </li>
+                  </ul>
+                </li>
+                <li class="nav-item nav-item-has-subnav">
+                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 部门管理 </a>
+                  <ul class="nav nav-subnav">
+                    <li> <a href={{ url_for('department.detail') }}>部门列表</a> </li>
+                    <li> <a href={{ url_for('department.create') }}>部门编辑</a> </li>
                   </ul>
                 </li>
               </ul>
@@ -96,7 +104,7 @@
                 <li class="dropdown dropdown-profile">
                   <a href="javascript:void(0)" data-toggle="dropdown">
                     <img class="img-avatar img-avatar-48 m-r-10" src="/images/users/avatar.jpg" alt="头像在此" />
-                    <span>用户 <span class="caret"></span></span>
+                    <span>{{ session.role }} <span class="caret"></span></span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-right">
                     <li> <a href={{ url_for('admin.profile') }}><i class="mdi mdi-account"></i> 个人信息</a> </li>
@@ -253,12 +261,112 @@
     <script type="text/javascript" src=/js/jquery.min.js></script>
     <script type="text/javascript" src=/js/bootstrap.min.js></script>
     <script type="text/javascript" src=/js/perfect-scrollbar.min.js></script>
+    <script type="text/javascript" src=/js/main.min.js></script>
     <script src="/js/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
     <script src="/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <script type="text/javascript" src=/js/bootstrap-datetimepicker/moment.min.js></script>
     <script type="text/javascript" src=/js/bootstrap-datetimepicker/locale/zh-cn.js></script>
     <script type="text/javascript" src=/js/bootstrap-daterangepicker/daterangepicker.min.js></script>
-    <script type="text/javascript" src=/js/main.min.js></script>
+    <script>
+        {# 分页按钮动态激活 #}
+        $(function () {
+            $(".pagination").find("li").each(function () {
+                const a = $(this).find("a:first")[0];
+                if ($(a).attr("href") === location.pathname+location.search) {
+                    $(this).addClass("active");
+                } else {
+                    $(this).removeClass("active");
+                }
+            });
+        });
+    </script>
+    <script>
+        {# 二级下拉列表联动响应 #}
+        function change_field(choose,target,url) {
+            let c1data;
+            const select = document.getElementById(choose);
+            $("#"+target).html('');//每次重新选择当前列表框，就清空下一级列表框。
+            for (let i = 0; i < select.length; i++) {
+                if (select[i].selected) { //判断被选中项
+                    let c1id = select[i].value;
+                    c1data = {
+                        "c1id": c1id
+                    };
+                    $.ajax({//发起ajax请求
+                        url : url,
+                        type : "POST",
+                        data : JSON.stringify(c1data),
+                        contentType : "application/json; charset=UTF-8",
+                        success : function (data) {
+                            if(data){
+                                $("<option selected='selected' disabled='disabled'  style='display: none' value=''>请选择二级分类</option>").appendTo("#"+target);
+                                for(i=0;i<data.length;i++){
+                                    $("<option value='"+data[i].id+"'>"+data[i].category+"</option>").appendTo("#"+target)
+                                }
+                            }else {
+                                alert('error')
+                            }
+                        }
+                    })
+                }
+            }
+        }
+    </script>
+    <script>
+        {# 日期选择器 #}
+        $(document).ready(function(){
+            // 输入最初为空
+            $('input[name="datefilter"]').daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    cancelLabel: '清空'
+                }
+            });
+
+            $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            });
+
+            $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+                $(this).val('');
+            });
+
+        });
+    </script>
+    <script>
+        {# 打开模态框相关动作 #}
+        $('#contentModal').on('show.bs.modal', function (event) {
+            const button = $(event.relatedTarget);
+            const recipient = button.data('whatever');
+            if(recipient==='edit'){
+                const modal = $(this);
+                modal.find('.modal-title')
+            }})
+    </script>
+    <script>
+        {# 侧边栏动态激活，需要给标签加id #}
+        {#var url_array = document.location.pathname.split("/");#}
+        {#    s1 = url_array[1];#}
+        {#    s2 = url_array[2];#}
+        {#    if (s1 === ''){#}
+        {#        $('#index').addClass('active')#}
+        {#    } else {#}
+        {#        $("#"+s1).addClass('open');#}
+        {#        $("#"+s2).addClass('active')#}
+        {#    }#}
+        {# 侧边栏动态激活，通过当前url判断 #}
+        $(function () {
+            $(".sidebar-main").find("li").each(function () {
+                const a = $(this).find("a:first")[0];
+                if ($(a).attr("href") === location.pathname) {
+                    $(this).parents("li").addClass("open");
+                    $(this).addClass("active");
+                } else {
+                    $(this).removeClass("active");
+                }
+            });
+        });
+    </script>
     {% block js_ext %}
     {% endblock %}
 </body>

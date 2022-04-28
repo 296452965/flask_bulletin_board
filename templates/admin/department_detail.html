@@ -1,0 +1,48 @@
+{# 页面一 #}
+{% extends 'admin/base_admin.html' %}
+{% import 'macro.html' as mcr %}
+{% block page_title %}
+    <span class="navbar-page-title"> 部门列表 </span>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-toolbar clearfix"></div>{# 块-工具栏 #}
+            <div class="card-body">{# 块-主体 #}
+                {% with messages = get_flashed_messages() %}
+                    {%  if messages %}
+                        {% for msg in messages %}
+                            <div class="alert alert-warning">
+                                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                {{ msg }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>部门名称</th>
+                                <th>角色</th>
+                                <th>用户名</th>
+                                <th>密码_hash</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for department in departments %}
+                                {{ mcr.tr_department_detail(loop.index,department.id,department.unit.unitname,department.role,
+                                department.username,department.password_hash[13:23]) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>{# 表格内容 #}
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_ext %}
+{% endblock %}

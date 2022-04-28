@@ -1,9 +1,11 @@
 from flask import Blueprint, session, redirect, url_for, request, flash, render_template
-from models import Admin, User
+from flask_login import login_user, logout_user, login_required
+from department.models import Department
+
 bp = Blueprint('login', __name__, url_prefix='/')
 
 
-# 登录页面，用户成功登录后进入展示页面
+# 登录页面，使用flask-login
 @bp.route('login/', methods=['GET', 'POST'])
 def login():
     if session.get('role', None) == 'user':
@@ -15,24 +17,30 @@ def login():
         pwd = request.form.get('password')
         role = request.form.get('role')
         if role == '1':  # 1代表管理员
-            result = Admin.query.filter_by(username=username, password=pwd).first()
-            if result is not None:
+            result = Department.query.filter_by(username=username,role=role).first()
+            if result is not None and result.validate_password(pwd):
+                login_user(result)
                 session['username'] = username
                 session['role'] = 'admin'
-                return redirect(url_for('admin.index'))
+                next = request.args.get('next')
+                return redirect(next or url_for('admin.index')) # 必须验证next参数的值。如果不验证的话，应用将会受到重定向的攻击。
             flash('用户名或密码错误！')
         if role == '0':  # 0代表用户
-            result = User.query.filter_by(username=username, password=pwd).first()
-            if result is not None:
+            result = Department.query.filter_by(username=username,role=role).first()
+            if result is not None and result.validate_password(pwd):
+                login_user(result)
                 session['username'] = username
                 session['role'] = 'user'
-                return redirect(url_for('user.index'))
+                next = request.args.get('next')
+                return redirect(next or url_for('user.index'))
             flash('用户名或密码错误！')
     return render_template('login/login.html')
 
 
 # 退出，结束session，返回至登录页面
 @bp.route('logout/')
+@login_required
 def logout():
+    logout_user()
     session.clear()
     return redirect(url_for('login.login'))

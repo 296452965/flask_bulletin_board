@@ -2,34 +2,18 @@
 from exts import db
 
 
-# 管理员信息表
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(50))
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    def __repr__(self):
-        return "<Admin(id='%s',username='%s',password='%s')>" % (self.id, self.username, self.password)
-
-
-# 用户信息表
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    # name字段，字符类型，最大的长度是50个字符
-    username = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(50))
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
-    # 让打印出来的数据更好看，可选的
-    def __repr__(self):
-        return "<User(id='%s',username='%s',password='%s')>" % (self.id, self.username, self.password)
+# # 管理员信息表
+# class Admin(db.Model, UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(50), unique=True)
+#     password = db.Column(db.String(50))
+#
+#     def __init__(self, username, password):
+#         self.username = username
+#         self.password = password
+#
+#     def __repr__(self):
+#         return "<Admin(id='%s',username='%s',password='%s')>" % (self.id, self.username, self.password)
 
 
 # 柱状图数据表
@@ -65,6 +49,7 @@ class Unit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     unitname = db.Column(db.String(50))
     contents = db.relationship('Content', back_populates='unit')
+    department = db.relationship('Department', back_populates='unit')
 
     def __init__(self, unitname):
         self.unitname = unitname
@@ -128,8 +113,8 @@ class Content(db.Model):
 
     def __repr__(self):
         return "<Content(id='%s',problem='%s',c1id='%s',c2id='%s',uid='%s',date='%s'),modificationstate='%s',modificationdate='%s'>" \
-               % (self.id, self.problem, self.c1id, self.c2id, self.uid, self.date, self.modificationstate, self.modificationdate)
-
+               % (self.id, self.problem, self.c1id, self.c2id, self.uid, self.date, self.modificationstate,
+                  self.modificationdate)
 
 # db.create_all()
 # admin = Admin('admin', '123456')

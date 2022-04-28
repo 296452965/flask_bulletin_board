@@ -1,6 +1,8 @@
+
 {% extends 'user/base.html' %}
+{% import 'macro.html' as mcr %}
 {% block page_title %}
-  <span class="navbar-page-title"> 管理员首页 </span>
+  <span class="navbar-page-title"> {{ current_user.unit.unitname }}首页 </span>
 {% endblock %}
 {% block content %}
   <div class="container-fluid">
@@ -97,111 +99,21 @@
               <table class="table table-hover">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>项目名称</th>
-                    <th>开始日期</th>
-                    <th>截止日期</th>
-                    <th>状态</th>
-                    <th>进度</th>
+                    <th>序号</th>
+                    <th>问题</th>
+                    <th>类型</th>
+                    <th>子类型</th>
+                    <th>时间</th>
+                    <th>整改状态</th>
+                    <th>整改时间</th>
+                    <th>操作</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>设计新主题</td>
-                    <td>10/02/2019</td>
-                    <td>12/05/2019</td>
-                    <td><span class="label label-warning">待定</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-warning" style="width: 45%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>网站重新设计</td>
-                    <td>01/03/2019</td>
-                   <td>12/04/2019</td>
-                    <td><span class="label label-success">进行中</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-success" style="width: 30%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>模型设计</td>
-                     <td>10/10/2019</td>
-                     <td>12/11/2019</td>
-                    <td><span class="label label-warning">待定</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-warning" style="width: 25%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>后台管理系统模板设计</td>
-                    <td>25/01/2019</td>
-                    <td>09/05/2019</td>
-                    <td><span class="label label-success">进行中</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-success" style="width: 55%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>前端设计</td>
-                    <td>10/10/2019</td>
-                    <td>12/12/2019</td>
-                    <td><span class="label label-danger">未开始</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-danger" style="width: 0%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>6</td>
-                    <td>桌面软件测试</td>
-                    <td>10/01/2019</td>
-                    <td>29/03/2019</td>
-                    <td><span class="label label-success">进行中</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-success" style="width: 75%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>7</td>
-                    <td>APP改版开发</td>
-                    <td>25/02/2019</td>
-                    <td>12/05/2019</td>
-                    <td><span class="label label-danger">暂停</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-danger" style="width: 15%;"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>8</td>
-                    <td>Logo设计</td>
-                    <td>10/02/2019</td>
-                    <td>01/03/2019</td>
-                    <td><span class="label label-warning">完成</span></td>
-                    <td>
-                      <div class="progress progress-striped progress-sm">
-                        <div class="progress-bar progress-bar-success" style="width: 100%;"></div>
-                      </div>
-                    </td>
-                  </tr>
+                    {% for con in contents.items %}
+                        {{ mcr.tr_user_index(loop.index,con.problem,con.category1.category,
+                        con.category2.category,con.date,con.modificationstate,con.modificationdate,con.id) }}
+                    {% endfor %}
                 </tbody>
               </table>
             </div>
