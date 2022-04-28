@@ -1,8 +1,8 @@
-{# 页面一 #}
+{# 问题列表页面 #}
 {% extends 'admin/base_admin.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
-    <span class="navbar-page-title"> 页面一 </span>
+    <span class="navbar-page-title"> 问题列表 </span>
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
@@ -24,7 +24,7 @@
                                     <option selected="selected" style='display: none' value=''>选择一级分类</option>
                                     {% for category1 in category1s %}
                                         <option value="{{ category1['id'] }}"
-                                                onclick="changefield('category1','category2','{{ url_for('admin.changeselectfield') }}')">{{ category1['category'] }}</option>
+                                                onclick="change_field('category1','category2','{{ url_for('admin.change_select_field') }}')">{{ category1['category'] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -67,6 +67,7 @@
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <h1 align="center">检查情况汇总</h1>
+                        <a class="btn btn-primary" href="{{ url_for('admin.export_data') }}"><span class="mdi mdi-download"></span>导出报表</a>
                         <p align="right">共筛选出{{ paginate.total }}条数据</p>
                         <thead>
                             <tr>
@@ -87,7 +88,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for con in contents %}
+                            {% for con in paginate.items %}
                                 {{ mcr.tr_detail(loop.index,con.problem,con.unit.unitname,con.category1.category,
                                 con.category2.category,con.date,con.modificationstate,con.modificationdate,con.id) }}
                             {% endfor %}
@@ -123,76 +124,4 @@
     </div>
 {% endblock %}
 {% block js_ext %}
-    <script>
-        $(function () {
-            $(".pagination").find("li").each(function () {
-                var a = $(this).find("a:first")[0];
-                if ($(a).attr("href") === location.pathname+location.search) {
-                    $(this).addClass("active");
-                } else {
-                    $(this).removeClass("active");
-                }
-            });
-        });
-        function changefield(choose,target,url) {
-            var c1data;
-            var select = document.getElementById(choose);
-            $("#"+target).html('');//每次重新选择当前列表框，就清空下一级列表框。
-            for (i = 0; i < select.length; i++) {
-                if (select[i].selected) { //判断被选中项
-                    c1id = select[i].value;
-                    c1data = {
-                        "c1id": c1id
-                    };
-                    $.ajax({//发起ajax请求
-                        url : url,
-                        type : "POST",
-                        data : JSON.stringify(c1data),
-                        contentType : "application/json; charset=UTF-8",
-                        success : function (data) {
-                            if(data){
-                                $("<option selected='selected' disabled='disabled'  style='display: none' value=''>请选择二级分类</option>").appendTo("#"+target);
-                                for(i=0;i<data.length;i++){
-                                    $("<option value='"+data[i].id+"'>"+data[i].category+"</option>").appendTo("#"+target)
-                                }
-                            }else {
-                                alert('error')
-                            }
-                        }
-                    })
-                }
-            }
-        }
-    </script>
-    <script>
-        $(document).ready(function(){
-            // 输入最初为空
-            $('input[name="datefilter"]').daterangepicker({
-                autoUpdateInput: false,
-                locale: {
-                    cancelLabel: '清空'
-                }
-            });
-
-            $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-            });
-
-            $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
-                $(this).val('');
-            });
-
-        });
-    </script>
-    <script type="text/javascript">
-        $('#contentModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget);
-            var recipient = button.data('whatever');
-            if(recipient==='edit'){
-                var modal = $(this);
-                {#modal.find('.modal-title')#}
-            }
-
-        })
-    </script>
 {% endblock %}

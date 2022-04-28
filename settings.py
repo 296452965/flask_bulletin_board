@@ -4,7 +4,7 @@ PORT     = '3306'
 DATABASE = 'cyk_flask'
 USERNAME = 'root'
 PASSWORD = 'root'
-DB_URI = 'mysql+pymysql://{}:{}@{}:{}/{}'.format(USERNAME, PASSWORD, HOSTNAME, PORT, DATABASE)
+DB_URI   = 'mysql+pymysql://{}:{}@{}:{}/{}'.format(USERNAME, PASSWORD, HOSTNAME, PORT, DATABASE)
 
 # SQLALCHEMY配置
 SQLALCHEMY_DATABASE_URI = DB_URI

@@ -1,0 +1,58 @@
+{# 信息填报页面 #}
+{% extends 'admin/base_admin.html' %}
+{% block page_title %}
+    <span class="navbar-page-title"> 部门编辑 </span>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header"><h4>编辑信息</h4></div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                    {%  if messages %}
+                        {% for msg in messages %}
+                            <div class="alert alert-warning">
+                                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                {{ msg }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <form class="form-horizontal" action="#" method="post">
+                    <div class="form-group">
+                        {{ form.uid.label(class="col-md-2 control-label") }}
+                        <div class="col-md-8">
+                            {{ form.uid(class='form-control',placeholder="选择单位") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.role.label(class="col-md-2 control-label") }}
+                        <div class="col-md-8">
+                            {{ form.role(class='form-control',placeholder="选择角色") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.username.label(class="col-md-2 control-label") }}
+                        <div class="col-md-8">
+                            {{ form.username(class='form-control',placeholder="设置用户名") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(class="col-md-2 control-label") }}
+                        <div class="col-md-8">
+                            {{ form.password(class='form-control',placeholder="设置密码") }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary col-md-1 col-md-offset-5" type="submit">提交</button>
+                            <button class="btn btn-default col-md-1" type="reset">重置</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_ext %}
+{% endblock %}

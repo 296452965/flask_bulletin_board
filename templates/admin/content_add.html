@@ -1,7 +1,7 @@
 {# 信息填报页面 #}
 {% extends 'admin/base_admin.html' %}
 {% block page_title %}
-    <span class="navbar-page-title"> 信息填报页面 </span>
+    <span class="navbar-page-title"> 问题填报 </span>
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
@@ -37,8 +37,8 @@
                             <select class="form-control" name="category1" id="category1">
                                 <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for category1 in category1s %}
-                                    <option value="{{ category1['id'] }}" onclick="changefield('category1','category2',
-                                            '{{ url_for('admin.changeselectfield') }}')">{{ category1['category'] }}</option>
+                                    <option value="{{ category1['id'] }}" onclick="change_field('category1','category2',
+                                            '{{ url_for('admin.change_select_field') }}')">{{ category1['category'] }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -91,35 +91,4 @@
     </div>
 {% endblock %}
 {% block js_ext %}
-    <script>
-        function changefield(choose,target,url) {
-            var c1data;
-            var select = document.getElementById(choose);
-            $("#"+target).html('');//每次重新选择当前列表框，就清空下一级列表框。
-            for (i = 0; i < select.length; i++) {
-                if (select[i].selected) { //判断被选中项
-                    c1id = select[i].value;
-                    c1data = {
-                        "c1id": c1id
-                    };
-                    $.ajax({//发起ajax请求
-                        url : url,
-                        type : "POST",
-                        data : JSON.stringify(c1data),
-                        contentType : "application/json; charset=UTF-8",
-                        success : function (data) {
-                            if(data){
-                                $("<option selected='selected' disabled='disabled'  style='display: none' value=''>请选择二级分类</option>").appendTo("#"+target);
-                                for(i=0;i<data.length;i++){
-                                    $("<option value='"+data[i].id+"'>"+data[i].category+"</option>").appendTo("#"+target)
-                                }
-                            }else {
-                                alert('error')
-                            }
-                        }
-                    })
-                }
-            }
-        }
-    </script>
 {% endblock %}

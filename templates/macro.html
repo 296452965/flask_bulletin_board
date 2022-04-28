@@ -13,7 +13,7 @@
         </td>
     </tr>
 {% endmacro %}
-{# 管理员查询页表格内容填写宏 #}
+{# 问题管理-问题列表页表格内容填写宏 #}
 {% macro tr_detail(index,problem,unitname,category1,category2,date,modificationstate,modificationdate,id) %}
     <tr>
         <td>
@@ -31,7 +31,7 @@
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
             <div class="btn-group">
-                <a class="{{ "btn btn-xs btn-yellow" if modificationstate == 0 else "btn btn-xs btn-yellow disabled"}}" href="#!" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
+                <a class="{{ "btn btn-xs btn-yellow" if modificationstate == 0 else "btn btn-xs btn-yellow disabled"}}" href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
                 <div class="modal fade" id="contentModal{{ id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -60,11 +60,44 @@
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-xs btn-warning" href="#!" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
+                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
                 <a class="btn btn-xs btn-danger" href="{{ url_for('admin.delete_content',id=id) }}" title="删除" data-toggle="tooltip"
-                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>
-                </a>
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
             </div>
+        </td>
+    </tr>
+{% endmacro %}
+{# 部门管理-部门列表页表格内容填写宏 #}
+{% macro tr_department_detail(index,id,departmentname,role,username,pwd) %}
+    <tr>
+        <td>{{ index }}</td>
+        <td>{{ departmentname }}</td>
+        <td>{{ '管理员' if role else '用户' }}</td>
+        <td>{{ username }}</td>
+        <td>{{ pwd }}</td>
+        <td>
+            <div class="btn-group">
+                <a class="btn btn-xs btn-yellow" href="{{ url_for('department.edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
+                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
+                <a class="btn btn-xs btn-danger" href="{{ url_for('department.delete', id=id) }}" title="删除" data-toggle="tooltip"
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
+            </div>
+        </td>
+    </tr>
+{% endmacro %}
+{# 用户页面首页表格内容填写宏 #}
+{% macro tr_user_index(index,problem,category1,category2,date,modificationstate,modificationdate,id) %}
+    <tr>
+        <td>{{ index }}</td>
+        <td>{{ problem }}</td>
+        <td>{{ category1 }}</td>
+        <td>{{ category2 }}</td>
+        <td>{{ date }}</td>
+        <td class="text-{{ 'success' if modificationstate else 'danger' }}">{{ '已完成' if modificationstate else '未整改' }}</td>
+        <td>{{ modificationdate if modificationdate else '' }}</td>
+        <td>
+            <a class="btn btn-xs btn-danger" href="#" title="删除" data-toggle="tooltip"
+               onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
         </td>
     </tr>
 {% endmacro %}
