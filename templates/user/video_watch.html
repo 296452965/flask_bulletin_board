@@ -1,0 +1,26 @@
+{% extends 'user/base.html' %}
+{% block style_ext %}
+    <style>
+    .car_center video{
+        width: 80%;
+        height: 80%;
+        margin-top: 2%;
+        margin-left: 10%;
+        box-sizing: border-box;
+        box-shadow: -10px 0px 15px #034c6a inset,
+        10px 0px 15px #034c6a inset;
+    }
+    </style>
+{% endblock %}
+{% block page_title %}
+    <span class="navbar-page-title"> 观看视频 </span>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="car_center">
+            <video controls="controls" autoplay>
+                <source src="{{ url_for('user.render_file', filename=filename)}}"/>
+            </video>
+        </div>
+    </div>
+{% endblock %}

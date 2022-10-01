@@ -2,20 +2,6 @@
 from exts import db
 
 
-# # 管理员信息表
-# class Admin(db.Model, UserMixin):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(50), unique=True)
-#     password = db.Column(db.String(50))
-#
-#     def __init__(self, username, password):
-#         self.username = username
-#         self.password = password
-#
-#     def __repr__(self):
-#         return "<Admin(id='%s',username='%s',password='%s')>" % (self.id, self.username, self.password)
-
-
 # 柱状图数据表
 class DataBar(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -69,7 +55,7 @@ class Category1(db.Model):
         self.category = category
 
     def __repr__(self):
-        return "<Unit(id='%s',category='%s')>" % (self.id, self.category)
+        return "<Category1(id='%s',category='%s')>" % (self.id, self.category)
 
 
 # 问题二级分类映射表，细化分类
@@ -85,7 +71,7 @@ class Category2(db.Model):
         self.c1id = c1id
 
     def __repr__(self):
-        return "<Unit(id='%s',category='%s',c1id='%s)>" % (self.id, self.category, self.c1id)
+        return "<Category2(id='%s',category='%s',c1id='%s)>" % (self.id, self.category, self.c1id)
 
 
 # 情况登记表，问题，问题类型编号，单位编号，发生时间
@@ -96,7 +82,7 @@ class Content(db.Model):
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
     date = db.Column(db.Date)
-    modificationstate = db.Column(db.Boolean)
+    modificationstate = db.Column(db.SmallInteger) # 0 未整改 1 整改待确认 2 已整改
     modificationdate = db.Column(db.Date)
     category1 = db.relationship('Category1', back_populates='contents')
     category2 = db.relationship('Category2', back_populates='contents')
@@ -116,11 +102,32 @@ class Content(db.Model):
                % (self.id, self.problem, self.c1id, self.c2id, self.uid, self.date, self.modificationstate,
                   self.modificationdate)
 
-# db.create_all()
-# admin = Admin('admin', '123456')
-# user = User('user', '123456')
-# unit = Unit('单位一')
-# db.session.add(admin)
-# db.session.add(user)
-# db.session.add(unit)
-# db.session.commit()
+
+# 相关文档表，文档名称，文档路径，文档类型
+class Document(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    filename = db.Column(db.String(100))
+    filepath = db.Column(db.String(100))
+    ftid = db.Column(db.Integer, db.ForeignKey('filetype.id'))
+    filetype = db.relationship('Filetype', back_populates='documents')
+
+    def __init__(self, filename=None, filepath=None, ftid=None):
+        self.filename = filename
+        self.filepath = filepath
+        self.ftid = ftid
+
+    def __repr__(self):
+        return "<Document(id='%s',filename='%s',filepath='%s',ftid='%s')>" % (self.id, self.filename, self.filepath, self.ftid)
+
+
+# 相关文档分类
+class Filetype(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    typename = db.Column(db.String(50))
+    documents = db.relationship('Document', back_populates='filetype')
+
+    def __init__(self, typename):
+        self.typename = typename
+
+    def __repr__(self):
+        return "<Filetype(id='%s', filetype='%s')>" % (self.id, self.typename)

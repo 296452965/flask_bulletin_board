@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_migrate import Migrate  # ORM迁移，修改ORM对应的模型，然后再把模型映射到数据库中
-from department.models import db
+from department.models import db, Department
 import login.views
 import admin.views
 import user.views
@@ -31,6 +31,9 @@ def load_user(user_id):
 @app.route('/')
 def hello_world():
     return redirect(url_for('login.login'))
+
+
+import commands
 
 
 if __name__ == '__main__':

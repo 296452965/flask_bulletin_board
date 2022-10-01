@@ -9,6 +9,7 @@ from admin.models import Unit
 department = Blueprint('department', __name__, url_prefix='/department/')
 
 
+# 部门详情
 @department.route('detail/')
 @login_required
 def detail():
@@ -16,6 +17,7 @@ def detail():
     return render_template('admin/department_detail.html', departments=departments)
 
 
+# 部门编辑
 class DepartmentCreatOrEdit(MethodView):
     @staticmethod
     @login_required
@@ -30,7 +32,6 @@ class DepartmentCreatOrEdit(MethodView):
     def post(id=None):
         form = DepartmentForm(request.form)
         department = Department() if not id else Department.query.filter_by(id=id).first()
-
         form.populate_obj(department)
         department.set_password(form.password.data)
         if not id:
@@ -43,6 +44,7 @@ class DepartmentCreatOrEdit(MethodView):
         return redirect(url_for('department.detail'))
 
 
+# 部门删除
 class DepartmentDelete(MethodView):
     @staticmethod
     @login_required

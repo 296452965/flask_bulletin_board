@@ -5,9 +5,13 @@ from io import BytesIO
 from functools import wraps
 import time
 import xlsxwriter
+import os
 
-from exts import db
-from admin.models import DataBar, DataLine, Content, Category1, Category2, Unit
+# from exts import db
+# from admin.models import DataBar, DataLine, Content, Category1, Category2, Unit, Document, Filetype
+from admin.models import *
+from admin.forms import DocumentForm
+from settings import UPLOAD_FOLDER
 
 admin = Blueprint('admin', __name__, url_prefix='/admin/')
 
@@ -91,7 +95,7 @@ def index():
 
 
 # 类视图(CBV)
-# 信息查询页面
+# 问题信息查询页面
 class DetailView(MethodView):
     @staticmethod
     @login_required
@@ -102,8 +106,7 @@ class DetailView(MethodView):
         uid = int(request.args.get('unit')) if request.args.get('unit') else None
         c1id = int(request.args.get('category1')) if request.args.get('category1') else None
         c2id = int(request.args.get('category2')) if request.args.get('category2') else None
-        modificationstate = bool(int(request.args.get('modificationstate'))) if request.args.get(
-            'modificationstate') else None
+        modificationstate = int(request.args.get('modificationstate')) if request.args.get('modificationstate') else None
         page = int(request.args.get('page', 1))  # 获取第‘page’页数据
         # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
         datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
@@ -131,7 +134,7 @@ class DetailView(MethodView):
                                units=units, uid=uid, c1id=c1id, c2id=c2id)
 
 
-# 信息填报页面
+# 问题信息填报页面
 class AddView(MethodView):
     @staticmethod
     @login_required
@@ -156,7 +159,7 @@ class AddView(MethodView):
         return redirect(url_for('admin.add'))
 
 
-# 信息删除页面
+# 问题信息删除页面
 class DelView(MethodView):
     @staticmethod
     @login_required
@@ -168,14 +171,14 @@ class DelView(MethodView):
         return redirect(url_for('admin.detail'))
 
 
-# 信息修改页面
+# 问题信息修改页面
 class UpdateView(MethodView):
     @staticmethod
     @login_required
     def post():
         content_id = request.form['id']
         date = request.form['modificationdate']
-        state = 1 if request.form['modificationstate'] == 'on' else 0
+        state = 2 if request.form['modificationstate'] == 'on' else 0
         edit_con = Content.query.filter_by(id=content_id).first()
         edit_con.modificationstate = state
         edit_con.modificationdate = date
@@ -184,7 +187,7 @@ class UpdateView(MethodView):
         return redirect(url_for('admin.detail'))
 
 
-# 列表导出
+# 问题列表导出
 class ExportView(MethodView):
     @staticmethod
     @login_required
@@ -220,8 +223,78 @@ class ExportView(MethodView):
         return res
 
 
+# 文档上传页面
+class DocumentUploadOrEdit(MethodView):
+    @staticmethod
+    @login_required
+    def get(id=None):
+        document = Document() if not id else Document.query.filter_by(id=id).first()
+        form = DocumentForm(request.form, obj=document)
+        form.ftid.choices = [(ft.id, ft.typename) for ft in Filetype.query.all()]
+        return render_template('admin/document_edit.html', form=form)
+
+    @staticmethod
+    @login_required
+    def post(id=None):
+        form = DocumentForm(request.form)
+        document = Document() if not id else Document.query.filter_by(id=id).first()
+
+        # for i in form:
+        #     print(i)
+        form.populate_obj(document)
+        print(document)
+        # 获取文件名
+        file_name = request.files['file'].filename
+        if document.filepath is None:
+            document.filepath = os.path.join(UPLOAD_FOLDER, file_name)
+            if not id:
+                db.session.add(document)
+            db.session.commit()
+            print(document)
+        # 保存文件
+        file = request.files['file']
+        file.save(document.filepath)
+        if document.id and not id:
+            flash('文档上传成功')
+        else:
+            flash('文档修改成功')
+        return redirect(url_for('admin.document_upload'))
+
+
+# 文档管理页面
+class DocumentDetail(MethodView):
+    @staticmethod
+    @login_required
+    def get():
+        documents = Document.query.all()
+        return render_template('admin/document_detail.html', documents=documents)
+
+
+# 文档删除
+class DocumentDelete(MethodView):
+    @staticmethod
+    @login_required
+    def get(id=None):
+        if id:
+            document = Document.query.filter_by(id=id).first()
+            try:
+                os.remove(document.filepath)
+                db.session.delete(document)
+                db.session.commit()
+                flash('文档删除成功')
+            except FileNotFoundError:
+                flash('文档不存在')
+        return redirect(url_for('admin.document_detail'))
+
+
+# 问题管理URL
 admin.add_url_rule('add/', view_func=AddView.as_view('add'))
-admin.add_url_rule('del/<id>/', view_func=DelView.as_view('delete_content'))
+admin.add_url_rule('del/<int:id>/', view_func=DelView.as_view('delete_content'))
 admin.add_url_rule('detail/', view_func=DetailView.as_view('detail'))
 admin.add_url_rule('edit/', view_func=UpdateView.as_view('edit_content'))
 admin.add_url_rule('detail/export/', view_func=ExportView.as_view('export_data'))
+# 文件管理URL
+admin.add_url_rule('document_upload/', view_func=DocumentUploadOrEdit.as_view('document_upload'))
+admin.add_url_rule('document_edit/<int:id>', view_func=DocumentUploadOrEdit.as_view('document_edit'))
+admin.add_url_rule('document_detail/', view_func=DocumentDetail.as_view('document_detail'))
+admin.add_url_rule('document_delete/<int:id>', view_func=DocumentDelete.as_view('document_delete'))

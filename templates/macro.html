@@ -27,11 +27,11 @@
         <td>{{ category1 }}</td>
         <td>{{ category2 }}</td>
         <td>{{ date }}</td>
-        <td class="text-{{ 'success' if modificationstate else 'danger' }}">{{ '已完成' if modificationstate else '未整改' }}</td>
+        <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
             <div class="btn-group">
-                <a class="{{ "btn btn-xs btn-yellow" if modificationstate == 0 else "btn btn-xs btn-yellow disabled"}}" href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
+                <a class="{{ "btn btn-xs btn-yellow" if modificationstate != 2 else "btn btn-xs btn-yellow disabled"}}" href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
                 <div class="modal fade" id="contentModal{{ id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -44,7 +44,7 @@
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ id }}">
                                         <label class="col-md-8">确认整改（已整改请勾选，未整改不勾选）</label>
-                                        <input type="checkbox" name="modificationstate" id="modificationstate" {{ 'checked = checked' if modificationstate == 1 else '' }}>
+                                        <input type="checkbox" name="modificationstate" id="modificationstate" {{ 'checked = checked' if modificationstate == 2 else '' }}>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-12">整改日期</label>
@@ -77,10 +77,10 @@
         <td>{{ pwd }}</td>
         <td>
             <div class="btn-group">
-                <a class="btn btn-xs btn-yellow" href="{{ url_for('department.edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i></a>
-                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
+                <a class="btn btn-xs btn-yellow" href="{{ url_for('department.edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
+                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i>查看</a>
                 <a class="btn btn-xs btn-danger" href="{{ url_for('department.delete', id=id) }}" title="删除" data-toggle="tooltip"
-                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>删除</a>
             </div>
         </td>
     </tr>
@@ -93,11 +93,28 @@
         <td>{{ category1 }}</td>
         <td>{{ category2 }}</td>
         <td>{{ date }}</td>
-        <td class="text-{{ 'success' if modificationstate else 'danger' }}">{{ '已完成' if modificationstate else '未整改' }}</td>
+        <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
-            <a class="btn btn-xs btn-danger" href="#" title="删除" data-toggle="tooltip"
-               onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
+            <a class="{{ "btn btn-xs btn-success" if modificationstate != 2 else "btn btn-xs btn-success disabled"}}" href="{{ url_for('user.change_state', id=id) }}" title="提交整改状态" data-toggle="tooltip"
+               onclick="return confirm('确定提交整改状态吗?')"><i class="mdi mdi-arrow-top-right"></i>提交整改</a>
+        </td>
+    </tr>
+{% endmacro %}
+{# 文档管理-文档列表页面表格内容填写宏 #}
+{% macro tr_document_detail(index,filename,filetype,filepath,id) %}
+    <tr>
+        <td>{{ index }}</td>
+        <td>{{ filename }}</td>
+        <td>{{ filetype }}</td>
+        <td>{{ filepath }}</td>
+        <td>
+            <div class="btn-group">
+                <a class="btn btn-xs btn-yellow" href="{{ url_for('admin.document_edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
+                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i>查看</a>
+                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.document_delete', id=id) }}" title="删除" data-toggle="tooltip"
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>删除</a>
+            </div>
         </td>
     </tr>
 {% endmacro %}

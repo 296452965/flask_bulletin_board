@@ -1,0 +1,64 @@
+{% extends 'user/base.html' %}
+{% block page_title %}
+    <span class="navbar-page-title"> 视频 </span>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-toolbar clearfix">
+                        <form class="search-bar" method="get" action="#!" role="form">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="search_key" placeholder="请输入关键词...">
+                                <span class="input-group-btn">
+                                  <button class="btn btn-default" type="submit">搜索</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>标题</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    {% for doc in documents %}
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ doc.filename }}</td>
+                                        <td>
+                                            <a class="btn btn-primary btn-sm" href="{{ url_for('user.document_download',fid=doc.id) }}"><span class="mdi mdi-download"></span>下载文件</a>
+                                            <a class="btn btn-primary btn-sm" href="{{ url_for('user.video_watch',fid=doc.id) }}"><span class="mdi mdi-video"></span>在线观看</a>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}
+{% block js_ext %}
+<script type="text/javascript">
+$(function(){
+    $('.search-bar .dropdown-menu a').click(function() {
+        var field = $(this).data('field') || '';
+        $('#search-field').val(field);
+        $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+    });
+});
+</script>
+{% endblock %}

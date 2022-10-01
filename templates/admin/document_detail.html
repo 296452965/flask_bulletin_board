@@ -1,0 +1,48 @@
+{# 文件列表页面 #}
+{% extends 'admin/base_admin.html' %}
+{% import 'macro.html' as mcr %}
+{% block page_title %}
+    <span class="navbar-page-title"> 文档列表 </span>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-toolbar clearfix"></div>
+            <div class="card-body">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% if messages %}
+                            {% for msg in messages %}
+                                <div class="alert alert-warning">
+                                    <a href="#" class="close" data-dismiss="alert">&times;</a>
+                                    {{ msg }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {% endwith %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>文件名称</th>
+                                <th>文件分类</th>
+                                <th>文件路径</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in documents %}
+                                {{ mcr.tr_document_detail(loop.index,doc.filename,doc.filetype.typename,doc.filepath,doc.id) }}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js_ext %}
+{% endblock %}

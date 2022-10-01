@@ -1,7 +1,7 @@
-{# 信息填报页面 #}
+{# 文档上传页面 #}
 {% extends 'admin/base_admin.html' %}
 {% block page_title %}
-    <span class="navbar-page-title"> 部门编辑 </span>
+    <span class="navbar-page-title"> 文档上传 </span>
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
@@ -19,34 +19,31 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <form class="form-horizontal" action="#" method="post">
+                <form class="form-horizontal" action="#" method="post" enctype="multipart/form-data">
                     <div class="form-group">
-                        {{ form.uid.label(class="col-md-2 control-label") }}
+                        {{ form.ftid.label(class="col-md-2 control-label") }}
                         <div class="col-md-8">
-                            {{ form.uid(class='form-control',placeholder="选择单位") }}
+                            {{ form.ftid(class='form-control',placeholder="选择类型") }}
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ form.role.label(class="col-md-2 control-label") }}
+                        {{ form.filename.label(class="col-md-2 control-label") }}
                         <div class="col-md-8">
-                            {{ form.role(class='form-control',placeholder="选择角色") }}
+                            {{ form.filename(class='form-control',placeholder="设置文件名") }}
                         </div>
                     </div>
                     <div class="form-group">
-                        {{ form.username.label(class="col-md-2 control-label") }}
+                        {{ form.file.label(class="col-md-2 control-label") }}
                         <div class="col-md-8">
-                            {{ form.username(class='form-control',placeholder="设置用户名") }}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {{ form.password.label(class="col-md-2 control-label") }}
-                        <div class="col-md-8">
-                            {{ form.password(class='form-control',placeholder="设置密码") }}
+                            {{ form.file }}
+                            {% for error in form.file.errors %}
+                                {{ error }}
+                            {% endfor %}
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-md-12">
-                            <button class="btn btn-primary col-md-1 col-md-offset-5" type="submit">提交</button>
+                            {{ form.submit(class="btn btn-primary col-md-1 col-md-offset-5") }}
                             <button class="btn btn-default col-md-1" type="reset">重置</button>
                         </div>
                     </div>

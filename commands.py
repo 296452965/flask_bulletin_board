@@ -10,16 +10,20 @@ def admin(username, password):
     """Create user."""
     db.create_all()
 
-    admin = Department.query.filter_by('role' == 1).first()
+    admin = Department.query.filter_by(role=1).first()
     if admin is not None:
         click.echo('Updating admin...')
         admin.username = username
         admin.set_password(password)  # 设置密码
     else:
         click.echo('Creating admin...')
-        admin = Department(username=username)
+        admin = Department(username=username, role=1)
         admin.set_password(password)  # 设置密码
         db.session.add(admin)
 
     db.session.commit()  # 提交数据库会话
     click.echo('Create Admin Done.')
+
+
+if __name__ == '__main__':
+    admin()
