@@ -82,7 +82,7 @@ class Content(db.Model):
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
     date = db.Column(db.Date)
-    modificationstate = db.Column(db.SmallInteger) # 0 未整改 1 整改待确认 2 已整改
+    modificationstate = db.Column(db.SmallInteger)  # 0 未整改 1 整改待确认 2 已整改
     modificationdate = db.Column(db.Date)
     category1 = db.relationship('Category1', back_populates='contents')
     category2 = db.relationship('Category2', back_populates='contents')
@@ -117,7 +117,8 @@ class Document(db.Model):
         self.ftid = ftid
 
     def __repr__(self):
-        return "<Document(id='%s',filename='%s',filepath='%s',ftid='%s')>" % (self.id, self.filename, self.filepath, self.ftid)
+        return "<Document(id='%s',filename='%s',filepath='%s',ftid='%s')>" % \
+               (self.id, self.filename, self.filepath, self.ftid)
 
 
 # 相关文档分类
@@ -131,3 +132,53 @@ class Filetype(db.Model):
 
     def __repr__(self):
         return "<Filetype(id='%s', filetype='%s')>" % (self.id, self.typename)
+
+
+class Badge(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    badge_name = db.Column(db.String(50))
+    pic_path = db.Column(db.String(100))
+    detail = db.Column(db.String(128))
+    same_badge_can_be_worn_concurrently = db.Column(db.Integer, nullable=False)
+    level = db.Column(db.Integer)
+    same_level_can_be_worn_concurrently = db.Column(db.Integer)
+    condition = db.Column(db.String(32))
+    different_condition_can_be_worn_concurrently = db.Column(db.Integer)
+    num_can_be_worn = db.Column(db.Integer)
+    wearing_method_1 = db.Column(db.Integer)
+    wearing_method_2 = db.Column(db.Integer)
+    priority = db.Column(db.Integer)
+    bt_id = db.Column(db.Integer, db.ForeignKey('badgetype.id'))
+    badgetype = db.relationship('BadgeType', back_populates='badges')
+
+    def __init__(self, badge_name=None, pic_path=None, detail=None, same_badge_can_be_worn_concurrently=None,
+                 level=None, same_level_can_be_worn_concurrently=None, condition=None,
+                 different_condition_can_be_worn_concurrently=None, num_can_be_worn=None, wearing_method_1=None,
+                 wearing_method_2=None, priority=None, bt_id=None):
+        self.badge_name = badge_name
+        self.pic_path = pic_path
+        self.detail = detail
+        self.same_badge_can_be_worn_concurrently = same_badge_can_be_worn_concurrently
+        self.level = level
+        self.same_level_can_be_worn_concurrently = same_level_can_be_worn_concurrently
+        self.condition = condition
+        self.different_condition_can_be_worn_concurrently = different_condition_can_be_worn_concurrently
+        self.num_can_be_worn = num_can_be_worn
+        self.wearing_method_1 = wearing_method_1
+        self.wearing_method_2 = wearing_method_2
+        self.priority = priority
+        self.bt_id = bt_id
+
+
+class BadgeType(db.Model):
+    __tablename__ = 'badgetype'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    cat_1_name = db.Column(db.String(50))  # 大类
+    cat_2_name = db.Column(db.String(50))  # 类
+    typename = db.Column(db.String(50))  # 项目名称
+    badges = db.relationship('Badge', back_populates='badgetype')
+
+    def __init__(self, cat_1_name, cat_2_name, typename):
+        self.cat_1_name = cat_1_name
+        self.cat_2_name = cat_2_name
+        self.typename = typename

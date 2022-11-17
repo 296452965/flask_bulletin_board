@@ -34,7 +34,7 @@
             .lyear-layout-sidebar-close .lyear-layout-sidebar:hover #logo a {
                 width: 100%;
                 margin: 0;
-                letter-spacing: 0px;
+                letter-spacing: 0;
             }
         }
     </style>
@@ -58,9 +58,9 @@
               <ul class="nav nav-drawer">
                 <li class="nav-item active"> <a href={{ url_for('user.index') }}><i class="mdi mdi-home"></i> 首页</a> </li>
                 <li class="nav-item nav-item-has-subnav">
-                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 列表一 </a>
+                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 小应用 </a>
                   <ul class="nav nav-subnav">
-                    <li> <a href="#">页面一</a> </li>
+                    <li> <a href={{ url_for('user.badge') }}>小章章</a> </li>
                   </ul>
                 </li>
               </ul>
@@ -96,7 +96,7 @@
                     <span>{{ session.role }} <span class="caret"></span></span>
                   </a>
                   <ul class="dropdown-menu dropdown-menu-right">
-                    <li> <a href={{ url_for('user.profile') }}><i class="mdi mdi-account"></i> 个人信息</a> </li>
+                    <li> <a href={{ url_for('admin.profile') }}><i class="mdi mdi-account"></i> 个人信息</a> </li>
                     <li> <a href="#"><i class="mdi mdi-lock-outline"></i> 修改密码</a> </li>
                     <li class="divider"></li>
                     <li> <a href={{ url_for('login.logout') }}><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
@@ -256,6 +256,7 @@
     <script type="text/javascript" src=/js/bootstrap-datetimepicker/locale/zh-cn.js></script>
     <script type="text/javascript" src=/js/bootstrap-daterangepicker/daterangepicker.min.js></script>
     <script type="text/javascript" src=/js/main.min.js></script>
+    <script type="text/javascript" src=/js/bootstrap-selectN.min.js></script>
     {% block js_ext %}
     {% endblock %}
 </body>
