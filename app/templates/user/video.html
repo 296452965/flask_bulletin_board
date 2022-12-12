@@ -1,6 +1,6 @@
 {% extends 'user/base.html' %}
 {% block page_title %}
-    <span class="navbar-page-title"> 政策 </span>
+    <span class="navbar-page-title"> 视频 </span>
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
@@ -30,15 +30,20 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    {% for doc in documents %}
+                                {% for doc in documents %}
+                                    <tr>
                                         <td>{{ loop.index }}</td>
                                         <td>{{ doc.filename }}</td>
                                         <td>
-                                            <a class="btn btn-primary btn-sm" href="{{ url_for('user.document_download',fid=doc.id) }}"><span class="mdi mdi-download"></span>下载文件</a>
+                                            <a class="btn btn-primary btn-sm"
+                                               href="{{ url_for('user.document_download',fid=doc.id) }}"><span
+                                                    class="mdi mdi-download"></span>下载文件</a>
+                                            <a class="btn btn-primary btn-sm"
+                                               href="{{ url_for('user.video_watch',fid=doc.id) }}"><span
+                                                    class="mdi mdi-video"></span>在线观看</a>
                                         </td>
-                                    {% endfor %}
-                                </tr>
+                                    </tr>
+                                {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -49,4 +54,15 @@
         </div>
 
     </div>
+{% endblock %}
+{% block js_ext %}
+    <script type="text/javascript">
+        $(function () {
+            $('.search-bar .dropdown-menu a').click(function () {
+                var field = $(this).data('field') || '';
+                $('#search-field').val(field);
+                $('#search-btn').html($(this).text() + ' <span class="caret"></span>');
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,8 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, request, flash, render_template
 from flask_login import login_user, logout_user, login_required
-from department.models import Department
-
-bp = Blueprint('login', __name__, url_prefix='/')
+from app.department.models import Department
+from . import bp
 
 
 # 登录页面，使用flask-login

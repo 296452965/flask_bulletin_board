@@ -1,4 +1,4 @@
-from admin.models import db
+from app.admin.models import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 db = db  # 赋值给一变量，否则系统会只找到admin应用的db

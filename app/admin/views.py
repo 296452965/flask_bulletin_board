@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, session, redirect, url_for, flash, send_file
+from flask import render_template, jsonify, request, session, redirect, url_for, flash, send_file
 from flask.views import MethodView
 from flask_login import login_required, current_user
 from io import BytesIO
@@ -6,14 +6,10 @@ from functools import wraps
 import time
 import xlsxwriter
 import os
-
-# from exts import db
-# from admin.models import DataBar, DataLine, Content, Category1, Category2, Unit, Document, Filetype
-from admin.models import *
-from admin.forms import DocumentForm
-from settings import UPLOAD_FOLDER
-
-admin = Blueprint('admin', __name__, url_prefix='/admin/')
+from . import admin
+from .models import *
+from .forms import DocumentForm
+from config import UPLOAD_FOLDER
 
 
 def is_admin(f):

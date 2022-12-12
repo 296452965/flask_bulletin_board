@@ -1,5 +1,6 @@
 # flask-sqlalchemy的基本使用
-from exts import db
+# db的引用关系: exts<-admin<-department
+from app.exts import db
 
 
 # 柱状图数据表

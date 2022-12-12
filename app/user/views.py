@@ -3,10 +3,9 @@ from flask_login import login_required, current_user
 from flask.views import MethodView
 import os
 
-from admin.models import *
-from settings import UPLOAD_FOLDER
-
-user = Blueprint('user', __name__, url_prefix='/user/')
+from app.admin.models import *
+from config import UPLOAD_FOLDER
+from . import user
 
 
 # 用户页面主页

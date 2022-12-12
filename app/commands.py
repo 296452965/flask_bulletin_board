@@ -1,9 +1,11 @@
-from bulletin_board import app, db
 import click
-from department.models import Department
+from flask import Blueprint
+from app.department.models import db, Department
+
+bp = Blueprint('commands',__name__)
 
 
-@app.cli.command()
+@bp.cli.command()
 @click.option('--username', prompt=True, help='The username used to login.')
 @click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True, help='The password used to login.')
 def admin(username, password):
@@ -23,7 +25,3 @@ def admin(username, password):
 
     db.session.commit()  # 提交数据库会话
     click.echo('Create Admin Done.')
-
-
-if __name__ == '__main__':
-    admin()

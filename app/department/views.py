@@ -2,11 +2,11 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask.views import MethodView
 from flask_login import login_required
 
-from department.forms import DepartmentForm
-from department.models import Department, db
-from admin.models import Unit
+from .forms import DepartmentForm
+from .models import Department, db
+from app.admin.models import Unit
+from . import department
 
-department = Blueprint('department', __name__, url_prefix='/department/')
 
 
 # 部门详情
