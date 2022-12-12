@@ -58,6 +58,7 @@ class DepartmentDelete(MethodView):
         return redirect(url_for('department.detail'))
 
 
+
 department.add_url_rule('edit/<int:id>', view_func=DepartmentCreatOrEdit.as_view('edit'))
 department.add_url_rule('create/', view_func=DepartmentCreatOrEdit.as_view('create'))
 department.add_url_rule('delete/<int:id>', view_func=DepartmentDelete.as_view('delete'))
