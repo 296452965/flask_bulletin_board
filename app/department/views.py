@@ -8,7 +8,6 @@ from app.admin.models import Unit
 from . import department
 
 
-
 # 部门详情
 @department.route('detail/')
 @login_required
@@ -56,7 +55,6 @@ class DepartmentDelete(MethodView):
             db.session.commit()
             flash('信息删除成功')
         return redirect(url_for('department.detail'))
-
 
 
 department.add_url_rule('edit/<int:id>', view_func=DepartmentCreatOrEdit.as_view('edit'))
