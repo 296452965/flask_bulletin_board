@@ -7,14 +7,14 @@
         <td>{{ end }}</td>
         <td><span class='label label-{{ state }}'>{{ state }}</span></td>
         <td>
-          <div class="progress progress-striped progress-sm">
-            <div class="progress-bar progress-bar-warning" style="width: {{ progress }}%;"></div>
-          </div>
+            <div class="progress progress-striped progress-sm">
+                <div class="progress-bar progress-bar-warning" style="width: {{ progress }}%;"></div>
+            </div>
         </td>
     </tr>
 {% endmacro %}
 {# 问题管理-问题列表页表格内容填写宏 #}
-{% macro tr_detail(index,problem,unitname,category1,category2,date,modificationstate,modificationdate,id) %}
+{% macro tr_detail(index,problem,unitname,category1,category2,date,modificationstate,modificationdate,filepath,id) %}
     <tr>
         <td>
             <label class="lyear-checkbox checkbox-primary">
@@ -31,25 +31,30 @@
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
             <div class="btn-group">
-                <a class="{{ "btn btn-xs btn-yellow" if modificationstate != 2 else "btn btn-xs btn-yellow disabled"}}" href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}" data-whatever="edit"><i class="mdi mdi-pencil"></i></a>
+                <a class="{{ "btn btn-xs btn-yellow" if modificationstate != 2 else "btn btn-xs btn-yellow disabled" }}"
+                   href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}"><i class="mdi mdi-pencil"></i></a>
                 <div class="modal fade" id="contentModal{{ id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
                                 <h4 class="modal-title" id="exampleModalLabel">编辑整改状态</h4>
                             </div>
-                            <form action="{{ url_for('admin.edit_content') }}" method="post">
+                            <form action="{{ url_for('admin.content_edit') }}" method="post">
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ id }}">
                                         <label class="col-md-8">确认整改（已整改请勾选，未整改不勾选）</label>
-                                        <input type="checkbox" name="modificationstate" id="modificationstate" {{ 'checked = checked' if modificationstate == 2 else '' }}>
+                                        <input type="checkbox" name="modificationstate"
+                                               id="modificationstate" {{ 'checked = checked' if modificationstate == 2 else '' }}>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-12">整改日期</label>
-                                        <input class="form-control js-datepicker m-b-10" type="text" id="modificationdate" name="modificationdate"
-                                               placeholder="{{ modificationdate if modificationdate else '注意：提交整改日期不能为空' }}" value="" data-date-format="yyyy-mm-dd">
+                                        <input class="form-control js-datepicker m-b-10" type="text"
+                                               id="modificationdate" name="modificationdate"
+                                               placeholder="{{ modificationdate if modificationdate else '注意：提交整改日期不能为空' }}"
+                                               value="" data-date-format="yyyy-mm-dd">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
@@ -60,8 +65,117 @@
                         </div>
                     </div>
                 </div>
-                <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i></a>
-                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.delete_content',id=id) }}" title="删除" data-toggle="tooltip"
+                <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i></a>
+                <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="exampleModalLabel">问题图片</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                                            <ol class="carousel-indicators">
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                                            </ol>
+                                            <div class="carousel-inner">
+
+                                            </div>
+                                            <a class="left carousel-control" href="#carouselExampleIndicators"
+                                               role="button" data-slide="prev"><span
+                                                    class="icon-left-open-big icon-prev"
+                                                    aria-hidden="true"></span><span class="sr-only">Previous</span></a>
+                                            <a class="right carousel-control" href="#carouselExampleIndicators"
+                                               role="button" data-slide="next"><span
+                                                    class="icon-right-open-big icon-next"
+                                                    aria-hidden="true"></span><span
+                                                    class="sr-only">Next</span></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.content_delete',id=id) }}" title="删除"
+                   data-toggle="tooltip"
+                   onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
+            </div>
+        </td>
+    </tr>
+{% endmacro %}
+{# 表扬管理-表扬列表页表格内容填写宏 #}
+{% macro tr_praise_detail(index,case,unitname,category1,date,filepath,id) %}
+    <tr>
+        <td>
+            <label class="lyear-checkbox checkbox-primary">
+                <input type="checkbox" name={{ index }} value={{ index }}><span></span>{# 选择框 #}
+            </label>
+        </td>
+        <td>{{ index }}</td>
+        <td>{{ case }}</td>
+        <td>{{ unitname }}</td>
+        <td>{{ category1 }}</td>
+        <td>{{ date }}</td>
+        <td>
+            <div class="btn-group">
+                <a class="btn btn-xs btn-yellow" href="#" title="编辑""><i class="mdi mdi-pencil"></i></a>
+                <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i></a>
+                <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="exampleModalLabel">情况图片</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                                            <ol class="carousel-indicators">
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                                                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                                            </ol>
+                                            <div class="carousel-inner">
+
+                                            </div>
+                                            <a class="left carousel-control" href="#carouselExampleIndicators"
+                                               role="button" data-slide="prev"><span
+                                                    class="icon-left-open-big icon-prev"
+                                                    aria-hidden="true"></span><span class="sr-only">Previous</span></a>
+                                            <a class="right carousel-control" href="#carouselExampleIndicators"
+                                               role="button" data-slide="next"><span
+                                                    class="icon-right-open-big icon-next"
+                                                    aria-hidden="true"></span><span
+                                                    class="sr-only">Next</span></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.praise_delete',id=id) }}" title="删除"
+                   data-toggle="tooltip"
                    onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i></a>
             </div>
         </td>
@@ -77,9 +191,11 @@
         <td>{{ pwd }}</td>
         <td>
             <div class="btn-group">
-                <a class="btn btn-xs btn-yellow" href="{{ url_for('department.edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
+                <a class="btn btn-xs btn-yellow" href="{{ url_for('department.edit', id=id) }}" title="编辑"
+                   data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
                 <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i>查看</a>
-                <a class="btn btn-xs btn-danger" href="{{ url_for('department.delete', id=id) }}" title="删除" data-toggle="tooltip"
+                <a class="btn btn-xs btn-danger" href="{{ url_for('department.delete', id=id) }}" title="删除"
+                   data-toggle="tooltip"
                    onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>删除</a>
             </div>
         </td>
@@ -96,7 +212,8 @@
         <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
         <td>{{ modificationdate if modificationdate else '' }}</td>
         <td>
-            <a class="{{ "btn btn-xs btn-success" if modificationstate != 2 else "btn btn-xs btn-success disabled"}}" href="{{ url_for('user.change_state', id=id) }}" title="提交整改状态" data-toggle="tooltip"
+            <a class="{{ "btn btn-xs btn-success" if modificationstate != 2 else "btn btn-xs btn-success disabled" }}"
+               href="{{ url_for('user.change_state', id=id) }}" title="提交整改状态" data-toggle="tooltip"
                onclick="return confirm('确定提交整改状态吗?')"><i class="mdi mdi-arrow-top-right"></i>提交整改</a>
         </td>
     </tr>
@@ -110,9 +227,11 @@
         <td>{{ filepath }}</td>
         <td>
             <div class="btn-group">
-                <a class="btn btn-xs btn-yellow" href="{{ url_for('admin.document_edit', id=id) }}" title="编辑" data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
+                <a class="btn btn-xs btn-yellow" href="{{ url_for('admin.document_edit', id=id) }}" title="编辑"
+                   data-toggle="tooltip"><i class="mdi mdi-pencil"></i>编辑</a>
                 <a class="btn btn-xs btn-warning" href="#" title="查看" data-toggle="tooltip"><i class="mdi mdi-eye"></i>查看</a>
-                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.document_delete', id=id) }}" title="删除" data-toggle="tooltip"
+                <a class="btn btn-xs btn-danger" href="{{ url_for('admin.document_delete', id=id) }}" title="删除"
+                   data-toggle="tooltip"
                    onclick="return confirm('确定删除该记录吗?')"><i class="mdi mdi-window-close"></i>删除</a>
             </div>
         </td>

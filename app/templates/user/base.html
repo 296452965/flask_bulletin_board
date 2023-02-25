@@ -246,7 +246,16 @@
 
         <!--页面主要内容-->
         <main class="lyear-layout-content">
-
+            {% with messages = get_flashed_messages() %}
+                {%  if messages %}
+                    {% for msg in messages %}
+                        <div class="alert alert-warning">
+                            <a href="#" class="close" data-dismiss="alert">&times;</a>
+                            {{ msg }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
             {% block content %}{% endblock %}
 
         </main>

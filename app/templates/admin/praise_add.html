@@ -311,17 +311,8 @@
                             <select class="form-control" name="category1" id="category1">
                                 <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for category1 in category1s %}
-                                    <option value="{{ category1['id'] }}" onclick="change_field('category1','category2','{{ url_for('admin.change_select_field') }}')">{{ category1['category'] }}</option>
+                                    <option value="{{ category1['id'] }}">{{ category1['category'] }}</option>
                                 {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label" for="category2">选择二级分类</label>
-                        <div class="col-md-8">
-                            <select class="form-control" name="category2" id="category2">
-                                <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
-                                {# 动态加载 #}
                             </select>
                         </div>
                     </div>

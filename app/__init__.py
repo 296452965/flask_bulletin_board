@@ -10,14 +10,14 @@ from app.department.models import db
 def create_app(config_name=None):
     app = Flask(__name__, static_url_path='')
     configure_app(app, config_name)  # 导入参数设置
-    db.init_app(app)  # 初始化绑定app对象
+    db.init_app(app)  # db初始化绑定app对象
     migrate = Migrate(app, db)
     login_manager = LoginManager(app)
     login_manager.login_view = 'login.login'
     login_manager.login_message = '访问页面需要登录'
 
     @login_manager.user_loader
-    def load_user(user_id):
+    def load_user(user_id: int):
         # from .department.models import Department
         from app.department.models import Department
         dep = Department.query.get(int(user_id))
@@ -29,7 +29,7 @@ def create_app(config_name=None):
     app.register_blueprint(admin.admin)  # 注册管理员页面视图
     app.register_blueprint(user.user)  # 注册用户页面视图
     app.register_blueprint(department.department)  # 注册部门管理页面视图
-    app.register_blueprint(commands.bp)  # 注册部门管理页面视图
+    app.register_blueprint(commands.bp)  # 注册命令
 
     # 注册首页路由
     @app.route('/')

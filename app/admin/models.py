@@ -36,6 +36,7 @@ class Unit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     unitname = db.Column(db.String(50))
     contents = db.relationship('Content', back_populates='unit')
+    praises = db.relationship('Praise', back_populates='unit')
     department = db.relationship('Department', back_populates='unit')
 
     def __init__(self, unitname):
@@ -45,11 +46,42 @@ class Unit(db.Model):
         return "<Unit(id='%s',unitname='%s')>" % (self.id, self.unitname)
 
 
+# 问题分级映射表
+class ContentLevel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    level_name = db.Column(db.String(50))
+    point = db.Column(db.Integer)
+    contents = db.relationship('Content', back_papulates='content_level')
+
+    def __init__(self, level_name, point):
+        self.level_name = level_name
+        self.point = point
+
+    def __repr__(self):
+        return "<ContentLevel(id='%s',level_name='%s',point='%s')>" % (self.id, self.level_name, self.point)
+
+
+# 表扬分级映射表
+class PraiseLevel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    level_name = db.Column(db.String(50))
+    point = db.Column(db.Integer)
+    praises = db.relationship('Praise', back_papulates='praise_level')
+
+    def __init__(self, level_name, point):
+        self.level_name = level_name
+        self.point = point
+
+    def __repr__(self):
+        return "<PraiseLevel(id='%s',level_name='%s',point='%s')>" % (self.id, self.level_name, self.point)
+
+
 # 问题一级分类映射表
 class Category1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(50))
     contents = db.relationship('Content', back_populates='category1')
+    praises = db.relationship('Praise', back_populates='category1')
     category2s = db.relationship('Category2', back_populates='category1')
 
     def __init__(self, category):
@@ -75,33 +107,58 @@ class Category2(db.Model):
         return "<Category2(id='%s',category='%s',c1id='%s)>" % (self.id, self.category, self.c1id)
 
 
-# 情况登记表，问题，问题类型编号，单位编号，发生时间
+# 情况登记表，问题，问题类型编号，单位编号，发生日期，整改状态，整改日期，图片路径
 class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    problem = db.Column(db.Text)
+    case = db.Column(db.Text)
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
     date = db.Column(db.Date)
     modificationstate = db.Column(db.SmallInteger)  # 0 未整改 1 整改待确认 2 已整改
     modificationdate = db.Column(db.Date)
+    filepath = db.Column(db.String(256))
     category1 = db.relationship('Category1', back_populates='contents')
     category2 = db.relationship('Category2', back_populates='contents')
     unit = db.relationship('Unit', back_populates='contents')
 
-    def __init__(self, problem, c1id, c2id, uid, date, modificationstate, modificationdate):
-        self.problem = problem
+    def __init__(self, case, c1id, c2id, uid, date, modificationstate, modificationdate, filepath):
+        self.case = case
         self.c1id = c1id
         self.c2id = c2id
         self.uid = uid
         self.date = date
         self.modificationstate = modificationstate
         self.modificationdate = modificationdate
+        self.filepath = filepath
 
     def __repr__(self):
-        return "<Content(id='%s',problem='%s',c1id='%s',c2id='%s',uid='%s',date='%s'),modificationstate='%s',modificationdate='%s'>" \
-               % (self.id, self.problem, self.c1id, self.c2id, self.uid, self.date, self.modificationstate,
+        return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',date='%s',modificationstate='%s',modificationdate='%s')>" \
+               % (self.id, self.case, self.c1id, self.c2id, self.uid, self.date, self.modificationstate,
                   self.modificationdate)
+
+
+# 表扬登记表，情况，情况类型编号，单位编号，发生日期，图片路径
+class Praise(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    case = db.Column(db.Text)
+    c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
+    uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    date = db.Column(db.Date)
+    filepath = db.Column(db.String(256))
+    category1 = db.relationship('Category1', back_populates='praises')
+    unit = db.relationship('Unit', back_populates='praises')
+
+    def __init__(self, case, c1id, uid, date, filepath):
+        self.case = case
+        self.c1id = c1id
+        self.uid = uid
+        self.date = date
+        self.filepath = filepath
+
+    def __repr__(self):
+        return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',date='%s')>" \
+               % (self.id, self.case, self.c1id, self.uid, self.date)
 
 
 # 相关文档表，文档名称，文档路径，文档类型

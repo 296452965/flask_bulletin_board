@@ -23,26 +23,12 @@
                                 <select class="form-control" name="category1" id="category1">
                                     <option selected="selected" style='display: none' value=''>选择一级分类</option>
                                     {% for category1 in category1s %}
-                                        <option value="{{ category1['id'] }}"
-                                                onclick="change_field('category1','category2','{{ url_for('admin.change_select_field') }}')">{{ category1['category'] }}</option>
+                                        <option value="{{ category1['id'] }}">{{ category1['category'] }}</option>
                                     {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <select class="form-control" name="category2" id="category2">
-                                    {# 动态加载 #}
                                 </select>
                             </div>
                         </div>
                         <div class="row m-b-5">
-                            <div class="col-md-4">
-                                <select class="form-control" name="modificationstate" id="modificationstate">
-                                    <option selected="selected" style='display: none' value=''>选择整改情况</option>
-                                    <option value="0">未整改</option>
-                                    <option value="1">整改待确认</option>
-                                    <option value="2">已整改</option>
-                                </select>
-                            </div>
                             <div class="col-md-4">
                                 <input type="text" name="datefilter" class="form-control" placeholder=" 选择日期范围">
                             </div>
@@ -81,18 +67,14 @@
                                 <th>情况</th>
                                 <th>单位</th>
                                 <th>类型</th>
-                                <th>子类型</th>
                                 <th>时间</th>
-                                <th>整改状态</th>
-                                <th>整改时间</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for con in paginate.items %}
-                                {{ mcr.tr_detail(loop.index,con.case,con.unit.unitname,con.category1.category,
-                                con.category2.category,con.date,con.modificationstate,con.modificationdate,con.filepath,
-                                con.id) }}
+                                {{ mcr.tr_praise_detail(loop.index,con.case,con.unit.unitname,con.category1.category,
+                                con.date,con.filepath,con.id) }}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -101,19 +83,19 @@
                     <ul class="pagination">
                         <li>
                             {% if paginate.has_prev %}
-                                <a href="{{ url_for('admin.content_detail', page=paginate.prev_num, unit=uid, category1=c1id, category2=c2id) }}">«上一页</a>
+                                <a href="{{ url_for('admin.praise_detail', page=paginate.prev_num, unit=uid, category1=c1id) }}">«上一页</a>
                             {% else %}
                                 <a class="disabled">«上一页</a>
                             {% endif %}
                         </li>
                         {% for i in paginate.iter_pages() %}
                             <li>
-                                <a href="{{ url_for('admin.content_detail', page=i, unit=uid, category1=c1id, category2=c2id) }}">{{ i }}</a>
+                                <a href="{{ url_for('admin.praise_detail', page=i, unit=uid, category1=c1id) }}">{{ i }}</a>
                             </li>
                         {% endfor %}
                         <li>
                             {% if paginate.has_next %}
-                                <a href="{{ url_for('admin.content_detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id) }}">下一页»</a>
+                                <a href="{{ url_for('admin.praise_detail',page=paginate.next_num, unit=uid, category1=c1id) }}">下一页»</a>
                             {% else %}
                                 <a class="disabled">下一页»</a>
                             {% endif %}

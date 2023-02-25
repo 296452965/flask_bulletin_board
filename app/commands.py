@@ -2,7 +2,7 @@ import click
 from flask import Blueprint
 from app.department.models import db, Department
 
-bp = Blueprint('commands',__name__)
+bp = Blueprint('commands', __name__)
 
 
 @bp.cli.command()

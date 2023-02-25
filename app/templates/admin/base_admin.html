@@ -62,9 +62,16 @@
                 <li class="nav-item nav-item-has-subnav">
                   <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 问题管理 </a>
                   <ul class="nav nav-subnav">
-                    <li id="detail"> <a href={{ url_for('admin.detail') }}>问题列表</a> </li>
+                    <li id="detail"> <a href={{ url_for('admin.content_detail') }}>情况列表</a> </li>
                     <li> <a href={{ url_for('admin.analysis') }}>图表分析</a> </li>
-                    <li> <a href="{{ url_for('admin.add') }}">问题填报</a> </li>
+                    <li> <a href={{ url_for('admin.content_add') }}>情况填报</a> </li>
+                  </ul>
+                </li>
+                <li class="nav-item nav-item-has-subnav">
+                  <a href="javascript:void(0)"><i class="mdi mdi-file-outline"></i> 表扬管理 </a>
+                  <ul class="nav nav-subnav">
+                    <li id="detail"> <a href={{ url_for('admin.praise_detail') }}>情况列表</a> </li>
+                    <li> <a href={{ url_for('admin.praise_add') }}>情况填报</a> </li>
                   </ul>
                 </li>
                 <li class="nav-item nav-item-has-subnav">
@@ -266,6 +273,7 @@
     </div>
 
     <script type="text/javascript" src=/js/jquery.min.js></script>
+    <script type="text/javascript" src=/js/jquery.cookie.js></script>
     <script type="text/javascript" src=/js/bootstrap.min.js></script>
     <script type="text/javascript" src=/js/perfect-scrollbar.min.js></script>
     <script type="text/javascript" src=/js/main.min.js></script>
@@ -290,6 +298,7 @@
     <script>
         {# 二级下拉列表联动响应 #}
         function change_field(choose,target,url) {
+            console.log(choose);
             let c1data;
             const select = document.getElementById(choose);
             $("#"+target).html('');//每次重新选择当前列表框，就清空下一级列表框。
@@ -310,7 +319,7 @@
                                 for(i=0;i<data.length;i++){
                                     $("<option value='"+data[i].id+"'>"+data[i].category+"</option>").appendTo("#"+target)
                                 }
-                            }else {
+                            } else {
                                 alert('error')
                             }
                         }
@@ -342,13 +351,36 @@
     </script>
     <script>
         {# 打开模态框相关动作 #}
-        $('#contentModal').on('show.bs.modal', function (event) {
+        $('#picModal').on('show.bs.modal', function (event) {
             const button = $(event.relatedTarget);
-            const recipient = button.data('whatever');
-            if(recipient==='edit'){
-                const modal = $(this);
-                modal.find('.modal-title')
-            }})
+            const caseId = button.data('case-id');
+            console.log(caseId);
+            let pmdata = {
+                'case_id':caseId
+            };
+            $.ajax({
+                url:'{{ url_for('admin.case_pic') }}',
+                type:'POST',
+                data: JSON.stringify(pmdata),
+                contentType : "application/json; charset=UTF-8",
+                success : function (data) {
+                    if(data){
+                        $('.carousel-inner').html('');
+                        for(i=0;i<data.length;i++){
+                            let picURL = "/admin/document/"+data[i];
+                            if(i==0){
+                                $("<div class='item active'><img src='"+picURL+"' height='464px' ></div>").appendTo($('.carousel-inner'))
+                            }else{
+                                $("<div class='item'><img src='"+picURL+"' height='464px' ></div>").appendTo($('.carousel-inner'))
+                            }
+                        }
+                    } else {
+                        alert('error')
+                    }
+                }
+            });
+
+            })
     </script>
     <script>
         {# 侧边栏动态激活，需要给标签加id #}
