@@ -1,5 +1,5 @@
-{# 问题列表页面 #}
-{% extends 'admin/base_admin.html' %}
+{# 表扬列表页面 #}
+{% extends 'user/base.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
     <span class="navbar-page-title"> 情况列表 </span>
@@ -23,32 +23,18 @@
                                 <select class="form-control" name="category1" id="category1">
                                     <option selected="selected" style='display: none' value=''>选择一级分类</option>
                                     {% for category1 in category1s %}
-                                        <option value="{{ category1['id'] }}"
-                                                onclick="change_field('category1','category2','{{ url_for('admin.change_select_field') }}')">{{ category1['category'] }}</option>
+                                        <option value="{{ category1['id'] }}">{{ category1['category'] }}</option>
                                     {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <select class="form-control" name="category2" id="category2">
-                                    {# 动态加载 #}
                                 </select>
                             </div>
                         </div>
                         <div class="row m-b-5">
-                            <div class="col-md-2">
-                                <select class="form-control" name="content_level" id="content_level">
+                            <div class="col-md-4">
+                                <select class="form-control" name="praise_level" id="praise_level">
                                     <option selected="selected" style='display: none' value=''>选择问题分级</option>
-                                    {% for content_level in content_levels %}
-                                        <option value="{{ content_level['id'] }}">{{ content_level['level_name'] }}</option>
+                                    {% for praise_level in praise_levels %}
+                                        <option value="{{ praise_level['id'] }}">{{ praise_level['level_name'] }}</option>
                                     {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <select class="form-control" name="modificationstate" id="modificationstate">
-                                    <option selected="selected" style='display: none' value=''>选择整改情况</option>
-                                    <option value="0">未整改</option>
-                                    <option value="1">整改待确认</option>
-                                    <option value="2">已整改</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -76,7 +62,6 @@
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <h1 align="center">检查情况汇总</h1>
-                        <a class="btn btn-primary" href="{{ url_for('admin.export_data') }}"><span class="mdi mdi-download"></span>导出报表</a>
                         <p align="right">共筛选出{{ paginate.total }}条数据</p>
                         <thead>
                             <tr>
@@ -89,19 +74,15 @@
                                 <th>情况</th>
                                 <th>单位</th>
                                 <th>类型</th>
-                                <th>子类型</th>
                                 <th>级别</th>
                                 <th>时间</th>
-                                <th>整改状态</th>
-                                <th>整改时间</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for con in paginate.items %}
-                                {{ mcr.tr_detail(loop.index,con.case,con.unit.unitname,con.category1.category,
-                                con.category2.category,con.content_level.level_name,con.date,con.modificationstate,
-                                con.modificationdate,con.filepath,con.id) }}
+                                {{ mcr.tr_praise_detail_user(loop.index,con.case,con.unit.unitname,con.category1.category,
+                                con.praise_level.level_name,con.date,con.filepath,con.id) }}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -110,19 +91,19 @@
                     <ul class="pagination">
                         <li>
                             {% if paginate.has_prev %}
-                                <a href="{{ url_for('admin.content_detail', page=paginate.prev_num, unit=uid, category1=c1id, category2=c2id, content_level=clid) }}">«上一页</a>
+                                <a href="{{ url_for('user.praise_detail', page=paginate.prev_num, unit=uid, category1=c1id, praise_level=plid) }}">«上一页</a>
                             {% else %}
                                 <a class="disabled">«上一页</a>
                             {% endif %}
                         </li>
                         {% for i in paginate.iter_pages() %}
                             <li>
-                                <a href="{{ url_for('admin.content_detail', page=i, unit=uid, category1=c1id, category2=c2id, content_level=clid) }}">{{ i }}</a>
+                                <a href="{{ url_for('user.praise_detail', page=i, unit=uid, category1=c1id, praise_level=plid) }}">{{ i }}</a>
                             </li>
                         {% endfor %}
                         <li>
                             {% if paginate.has_next %}
-                                <a href="{{ url_for('admin.content_detail',page=paginate.next_num, unit=uid, category1=c1id, category2=c2id, content_level=clid) }}">下一页»</a>
+                                <a href="{{ url_for('user.praise_detail',page=paginate.next_num, unit=uid, category1=c1id, praise_level=plid) }}">下一页»</a>
                             {% else %}
                                 <a class="disabled">下一页»</a>
                             {% endif %}

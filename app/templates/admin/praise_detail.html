@@ -1,4 +1,4 @@
-{# 问题列表页面 #}
+{# 表扬列表页面 #}
 {% extends 'admin/base_admin.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
@@ -29,6 +29,14 @@
                             </div>
                         </div>
                         <div class="row m-b-5">
+                            <div class="col-md-4">
+                                <select class="form-control" name="praise_level" id="praise_level">
+                                    <option selected="selected" style='display: none' value=''>选择问题分级</option>
+                                    {% for praise_level in praise_levels %}
+                                        <option value="{{ praise_level['id'] }}">{{ praise_level['level_name'] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                             <div class="col-md-4">
                                 <input type="text" name="datefilter" class="form-control" placeholder=" 选择日期范围">
                             </div>
@@ -67,6 +75,7 @@
                                 <th>情况</th>
                                 <th>单位</th>
                                 <th>类型</th>
+                                <th>级别</th>
                                 <th>时间</th>
                                 <th>操作</th>
                             </tr>
@@ -74,7 +83,7 @@
                         <tbody>
                             {% for con in paginate.items %}
                                 {{ mcr.tr_praise_detail(loop.index,con.case,con.unit.unitname,con.category1.category,
-                                con.date,con.filepath,con.id) }}
+                                con.praise_level.level_name,con.date,con.filepath,con.id) }}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -83,19 +92,19 @@
                     <ul class="pagination">
                         <li>
                             {% if paginate.has_prev %}
-                                <a href="{{ url_for('admin.praise_detail', page=paginate.prev_num, unit=uid, category1=c1id) }}">«上一页</a>
+                                <a href="{{ url_for('admin.praise_detail', page=paginate.prev_num, unit=uid, category1=c1id, praise_level=plid) }}">«上一页</a>
                             {% else %}
                                 <a class="disabled">«上一页</a>
                             {% endif %}
                         </li>
                         {% for i in paginate.iter_pages() %}
                             <li>
-                                <a href="{{ url_for('admin.praise_detail', page=i, unit=uid, category1=c1id) }}">{{ i }}</a>
+                                <a href="{{ url_for('admin.praise_detail', page=i, unit=uid, category1=c1id, praise_level=plid) }}">{{ i }}</a>
                             </li>
                         {% endfor %}
                         <li>
                             {% if paginate.has_next %}
-                                <a href="{{ url_for('admin.praise_detail',page=paginate.next_num, unit=uid, category1=c1id) }}">下一页»</a>
+                                <a href="{{ url_for('admin.praise_detail',page=paginate.next_num, unit=uid, category1=c1id, praise_level=plid) }}">下一页»</a>
                             {% else %}
                                 <a class="disabled">下一页»</a>
                             {% endif %}

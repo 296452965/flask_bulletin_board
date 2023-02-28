@@ -306,6 +306,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-md-2 control-label" for="content_level">选择问题分级</label>
+                        <div class="col-md-8">
+                            <select class="form-control" name="content_level" id="content_level">
+                                <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
+                                {% for content_level in content_levels %}
+                                    <option value="{{ content_level['id'] }}">{{ content_level['level_name'] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-md-2 control-label" for="category1">选择一级分类</label>
                         <div class="col-md-8">
                             <select class="form-control" name="category1" id="category1">

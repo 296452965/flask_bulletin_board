@@ -1,4 +1,5 @@
 from flask import session, redirect, render_template, url_for, flash, request, send_from_directory
+from flask.views import MethodView
 from flask_login import login_required, current_user
 import os
 
@@ -128,3 +129,79 @@ def password_edit():
         return redirect(url_for('login.logout'))
     form = PasswordForm(request.form, obj=department)
     return render_template('user/password_edit.html', form=form)
+
+
+# 类视图(CBV)
+# 问题信息查询页面
+class DetailView(MethodView):
+    @staticmethod
+    @login_required
+    def get():
+        clid = int(request.args.get('content_level')) if request.args.get('content_level') else None
+        uid = current_user.uid
+        c1id = int(request.args.get('category1')) if request.args.get('category1') else None
+        c2id = int(request.args.get('category2')) if request.args.get('category2') else None
+        modificationstate = int(request.args.get('modificationstate')) if request.args.get(
+            'modificationstate') else None
+        page = int(request.args.get('page', 1))  # 获取第‘page’页数据
+        # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
+        datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
+        per_page = 10  # 数据分页，每页显示10条数据
+        # 根据问题分类选择确定过滤方式
+        if c2id:
+            paginate = Content.query.filter_by(c1id=c1id, c2id=c2id)
+        elif c1id:
+            paginate = Content.query.filter_by(c1id=c1id)
+        else:
+            paginate = Content.query.filter_by()
+        # 根据是否选择分级确定过滤方式
+        if clid:
+            paginate = paginate.filter_by(clid=clid)
+        # 根据是否选择单位确定过滤方式
+        if uid:
+            paginate = paginate.filter_by(uid=uid)
+        # 根据是否选择整改状态确定过滤方式
+        if modificationstate:
+            paginate = paginate.filter_by(modificationstate=modificationstate)
+        # 根据是否选择日期范围确定过滤方式
+        if datefilter:
+            paginate = paginate.filter(Content.date.between(datefilter[0], datefilter[1]))
+        paginate = paginate.paginate(page, per_page)
+        category1s = db.session.query(Category1)
+        units = Unit.query.all()
+        content_levels = ContentLevel.query.all()
+        return render_template('user/content_detail.html', paginate=paginate, category1s=category1s,
+                               units=units, content_levels=content_levels, c1id=c1id, c2id=c2id, clid=clid)
+
+
+# 表扬信息查询页面
+class PraiseDetailView(MethodView):
+    @staticmethod
+    @login_required
+    def get():
+        plid = int(request.args.get('praise_level')) if request.args.get('praise_level') else None
+        uid = int(request.args.get('unit')) if request.args.get('unit') else None
+        c1id = int(request.args.get('category1')) if request.args.get('category1') else None
+        page = int(request.args.get('page', 1))
+        datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
+        per_page = 10
+        if c1id:
+            paginate = Praise.query.filter_by(c1id=c1id)
+        else:
+            paginate = Praise.query.filter_by()
+        if plid:
+            paginate = paginate.filter_by(plid=plid)
+        if uid:
+            paginate = paginate.filter_by(uid=uid)
+        if datefilter:
+            paginate = paginate.filter(Praise.date.between(datefilter[0], datefilter[1]))
+        paginate = paginate.paginate(page, per_page)
+        category1s = db.session.query(Category1)
+        units = Unit.query.all()
+        praise_levels = PraiseLevel.query.all()
+        return render_template('user/praise_detail.html', paginate=paginate, category1s=category1s,
+                               units=units, praise_levels=praise_levels, uid=uid, c1id=c1id, plid=plid)
+
+
+user.add_url_rule('detail/', view_func=DetailView.as_view('content_detail'))
+user.add_url_rule('praise_detail/', view_func=PraiseDetailView.as_view('praise_detail'))

@@ -35,6 +35,7 @@ class DataLine(db.Model):
 class Unit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     unitname = db.Column(db.String(50))
+    point = db.Column(db.String(100), default='[80,80,80,80,80,80,80,80,80,80,80,80]')
     contents = db.relationship('Content', back_populates='unit')
     praises = db.relationship('Praise', back_populates='unit')
     department = db.relationship('Department', back_populates='unit')
@@ -50,8 +51,8 @@ class Unit(db.Model):
 class ContentLevel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level_name = db.Column(db.String(50))
-    point = db.Column(db.Integer)
-    contents = db.relationship('Content', back_papulates='content_level')
+    point = db.Column(db.Float)
+    contents = db.relationship('Content', back_populates='content_level')
 
     def __init__(self, level_name, point):
         self.level_name = level_name
@@ -65,8 +66,8 @@ class ContentLevel(db.Model):
 class PraiseLevel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level_name = db.Column(db.String(50))
-    point = db.Column(db.Integer)
-    praises = db.relationship('Praise', back_papulates='praise_level')
+    point = db.Column(db.Float)
+    praises = db.relationship('Praise', back_populates='praise_level')
 
     def __init__(self, level_name, point):
         self.level_name = level_name
@@ -114,6 +115,7 @@ class Content(db.Model):
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    clid = db.Column(db.Integer, db.ForeignKey('content_level.id'))
     date = db.Column(db.Date)
     modificationstate = db.Column(db.SmallInteger)  # 0 未整改 1 整改待确认 2 已整改
     modificationdate = db.Column(db.Date)
@@ -121,20 +123,22 @@ class Content(db.Model):
     category1 = db.relationship('Category1', back_populates='contents')
     category2 = db.relationship('Category2', back_populates='contents')
     unit = db.relationship('Unit', back_populates='contents')
+    content_level = db.relationship('ContentLevel', back_populates='contents')
 
-    def __init__(self, case, c1id, c2id, uid, date, modificationstate, modificationdate, filepath):
+    def __init__(self, case, c1id, c2id, uid, clid, date, modificationstate, modificationdate, filepath):
         self.case = case
         self.c1id = c1id
         self.c2id = c2id
         self.uid = uid
         self.date = date
+        self.clid = clid
         self.modificationstate = modificationstate
         self.modificationdate = modificationdate
         self.filepath = filepath
 
     def __repr__(self):
-        return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',date='%s',modificationstate='%s',modificationdate='%s')>" \
-               % (self.id, self.case, self.c1id, self.c2id, self.uid, self.date, self.modificationstate,
+        return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',clid='%s',date='%s',modificationstate='%s',modificationdate='%s')>" \
+               % (self.id, self.case, self.c1id, self.c2id, self.uid, self.clid, self.date, self.modificationstate,
                   self.modificationdate)
 
 
@@ -144,21 +148,24 @@ class Praise(db.Model):
     case = db.Column(db.Text)
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    plid = db.Column(db.Integer, db.ForeignKey('praise_level.id'))
     date = db.Column(db.Date)
     filepath = db.Column(db.String(256))
     category1 = db.relationship('Category1', back_populates='praises')
     unit = db.relationship('Unit', back_populates='praises')
+    praise_level = db.relationship('PraiseLevel', back_populates='praises')
 
-    def __init__(self, case, c1id, uid, date, filepath):
+    def __init__(self, case, c1id, uid, plid, date, filepath):
         self.case = case
         self.c1id = c1id
         self.uid = uid
+        self.plid = plid
         self.date = date
         self.filepath = filepath
 
     def __repr__(self):
-        return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',date='%s')>" \
-               % (self.id, self.case, self.c1id, self.uid, self.date)
+        return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',plid='%s',date='%s')>" \
+               % (self.id, self.case, self.c1id, self.uid, self.plid, self.date)
 
 
 # 相关文档表，文档名称，文档路径，文档类型

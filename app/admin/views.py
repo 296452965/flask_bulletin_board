@@ -132,10 +132,12 @@ class DetailView(MethodView):
         # 前端传参unit,category1,category2,page,datefilter
         # flash(current_user.role)
         # flash(current_user.username)
+        clid = int(request.args.get('content_level')) if request.args.get('content_level') else None
         uid = int(request.args.get('unit')) if request.args.get('unit') else None
         c1id = int(request.args.get('category1')) if request.args.get('category1') else None
         c2id = int(request.args.get('category2')) if request.args.get('category2') else None
-        modificationstate = int(request.args.get('modificationstate')) if request.args.get('modificationstate') else None
+        modificationstate = int(request.args.get('modificationstate')) if request.args.get(
+            'modificationstate') else None
         page = int(request.args.get('page', 1))  # 获取第‘page’页数据
         # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
         datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
@@ -147,6 +149,9 @@ class DetailView(MethodView):
             paginate = Content.query.filter_by(c1id=c1id)
         else:
             paginate = Content.query.filter_by()
+        # 根据是否选择分级确定过滤方式
+        if clid:
+            paginate = paginate.filter_by(clid=clid)
         # 根据是否选择单位确定过滤方式
         if uid:
             paginate = paginate.filter_by(uid=uid)
@@ -159,8 +164,9 @@ class DetailView(MethodView):
         paginate = paginate.paginate(page, per_page)
         category1s = db.session.query(Category1)
         units = Unit.query.all()
+        content_levels = ContentLevel.query.all()
         return render_template('admin/content_detail.html', paginate=paginate, category1s=category1s,
-                               units=units, uid=uid, c1id=c1id, c2id=c2id)
+                               units=units, content_levels=content_levels, uid=uid, c1id=c1id, c2id=c2id, clid=clid)
 
 
 # 问题信息填报页面
@@ -171,7 +177,9 @@ class AddView(MethodView):
     def get():
         category1s = db.session.query(Category1)
         units = Unit.query.all()
-        return render_template('admin/content_add.html', category1s=category1s, units=units)
+        content_levels = ContentLevel.query.all()
+        return render_template('admin/content_add.html', category1s=category1s, units=units,
+                               content_levels=content_levels)
 
     @staticmethod
     @login_required
@@ -180,10 +188,21 @@ class AddView(MethodView):
         uid = request.form['unit']
         c1id = request.form['category1']
         c2id = request.form['category2']
+        clid = request.form['content_level']
         date = request.form['date']
         case = request.form['case']
         filepath = request.form['pics']
-        content = Content(case, c1id, c2id, uid, date, modificationstate=0, modificationdate=None, filepath=filepath)
+        content = Content(case, c1id, c2id, uid, clid, date, modificationstate=0, modificationdate=None,
+                          filepath=filepath)
+        unit = Unit.query.filter_by(id=uid).first()
+        content_level = ContentLevel.query.filter_by(id=clid).first()
+
+        # 分数数据格式转换
+        point_list = eval(unit.point)
+        month_index = int(date.split('-')[1]) - 1
+        point_list[month_index] += content_level.point
+        unit.point = str(point_list)
+
         db.session.add(content)
         db.session.commit()
         if content.id is not None:
@@ -332,15 +351,18 @@ class PraiseDetailView(MethodView):
     @login_required
     @is_admin
     def get():
+        plid = int(request.args.get('praise_level')) if request.args.get('praise_level') else None
         uid = int(request.args.get('unit')) if request.args.get('unit') else None
         c1id = int(request.args.get('category1')) if request.args.get('category1') else None
-        page = int(request.args.get('page',1))
+        page = int(request.args.get('page', 1))
         datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
         per_page = 10
         if c1id:
             paginate = Praise.query.filter_by(c1id=c1id)
         else:
             paginate = Praise.query.filter_by()
+        if plid:
+            paginate = paginate.filter_by(plid=plid)
         if uid:
             paginate = paginate.filter_by(uid=uid)
         if datefilter:
@@ -348,8 +370,9 @@ class PraiseDetailView(MethodView):
         paginate = paginate.paginate(page, per_page)
         category1s = db.session.query(Category1)
         units = Unit.query.all()
+        praise_levels = PraiseLevel.query.all()
         return render_template('admin/praise_detail.html', paginate=paginate, category1s=category1s,
-                               units=units, uid=uid, c1id=c1id)
+                               units=units, praise_levels=praise_levels, uid=uid, c1id=c1id, plid=plid)
 
 
 # 表扬信息填报页面
@@ -360,7 +383,8 @@ class PraiseAddView(MethodView):
     def get():
         category1s = db.session.query(Category1)
         units = Unit.query.all()
-        return render_template('admin/praise_add.html', category1s=category1s, units=units)
+        praise_levels = PraiseLevel.query.all()
+        return render_template('admin/praise_add.html', category1s=category1s, units=units, praise_levels=praise_levels)
 
     @staticmethod
     @login_required
@@ -368,10 +392,20 @@ class PraiseAddView(MethodView):
     def post():
         uid = request.form['unit']
         c1id = request.form['category1']
+        plid = request.form['praise_level']
         date = request.form['date']
         case = request.form['case']
         filepath = request.form['pics']
-        praise = Praise(case,c1id,uid,date,filepath)
+        praise = Praise(case, c1id, uid, plid, date, filepath)
+        unit = Unit.query.filter_by(id=uid).first()
+        praise_level = PraiseLevel.query.filter_by(id=plid).first()
+
+        # 分数数据格式转换
+        point_list = eval(unit.point)
+        month_index = int(date.split('-')[1]) - 1
+        point_list[month_index] += praise_level.point
+        unit.point = str(point_list)
+
         db.session.add(praise)
         db.session.commit()
         if praise.id is not None:
