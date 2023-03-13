@@ -24,7 +24,7 @@ class DepartmentCreatOrEdit(MethodView):
         department = Department() if not id else Department.query.filter_by(id=id).first()
         form = DepartmentForm(request.form, obj=department)
         # 下拉选项
-        form.uid.choices = [(u.id, u.unitname) for u in Unit.query.all()]
+        form.uid.choices = [(u.id, u.unit_name) for u in Unit.query.all()]
         return render_template('admin/department_edit.html', form=form)
 
     @staticmethod

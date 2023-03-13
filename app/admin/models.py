@@ -31,20 +31,40 @@ class DataLine(db.Model):
         return "<DataLine(id='%s',label='%s',data='%s')>" % (self.id, self.label, self.data)
 
 
-# 单位名称映射表
+# 二级单位名称映射表
+class Unit2(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    unit_name = db.Column(db.String(50))
+    contents = db.relationship('Content', back_populates='unit2')
+    praises = db.relationship('Praise', back_populates='unit2')
+    departments = db.relationship('Department', back_populates='unit2')
+    units = db.relationship('Unit', back_populates='unit2')
+
+    def __int__(self, unit_name):
+        self.unit_name = unit_name
+
+    def __repr__(self):
+        return "<Unit2(id='%s', unit_name='%s')>" % (self.id, self.unit_name)
+
+
+# 本机单位名称映射表, u2id:所属二级单位id
 class Unit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    unitname = db.Column(db.String(50))
+    unit_name = db.Column(db.String(50))
     point = db.Column(db.String(100), default='[80,80,80,80,80,80,80,80,80,80,80,80]')
+    u2id = db.Column(db.Integer, db.ForeignKey('unit2.id'))
     contents = db.relationship('Content', back_populates='unit')
     praises = db.relationship('Praise', back_populates='unit')
     department = db.relationship('Department', back_populates='unit')
+    unit2 = db.relationship('Unit2', back_populates='units')
 
-    def __init__(self, unitname):
-        self.unitname = unitname
+    def __init__(self, unit_name, point, u2id):
+        self.unit_name = unit_name
+        self.point = point
+        self.u2id = u2id
 
     def __repr__(self):
-        return "<Unit(id='%s',unitname='%s')>" % (self.id, self.unitname)
+        return "<Unit(id='%s',unit_name='%s',u2id='%s')>" % (self.id, self.unit_name, self.u2id)
 
 
 # 问题分级映射表
@@ -77,7 +97,7 @@ class PraiseLevel(db.Model):
         return "<PraiseLevel(id='%s',level_name='%s',point='%s')>" % (self.id, self.level_name, self.point)
 
 
-# 问题一级分类映射表
+# 情况（表扬、问题）一级分类映射表
 class Category1(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(50))
@@ -92,7 +112,7 @@ class Category1(db.Model):
         return "<Category1(id='%s',category='%s')>" % (self.id, self.category)
 
 
-# 问题二级分类映射表，细化分类
+# 情况（表扬、问题）二级分类映射表，细化分类
 class Category2(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category = db.Column(db.String(50))
@@ -115,31 +135,35 @@ class Content(db.Model):
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     c2id = db.Column(db.Integer, db.ForeignKey('category2.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    u2id = db.Column(db.Integer, db.ForeignKey('unit2.id'))
     clid = db.Column(db.Integer, db.ForeignKey('content_level.id'))
     date = db.Column(db.Date)
-    modificationstate = db.Column(db.SmallInteger)  # 0 未整改 1 整改待确认 2 已整改
-    modificationdate = db.Column(db.Date)
+    modification_state = db.Column(db.SmallInteger)  # 0 未整改 1 整改待确认 2 已整改
+    modification_date = db.Column(db.Date)
     filepath = db.Column(db.String(256))
     category1 = db.relationship('Category1', back_populates='contents')
     category2 = db.relationship('Category2', back_populates='contents')
     unit = db.relationship('Unit', back_populates='contents')
+    unit2 = db.relationship('Unit2', back_populates='contents')
     content_level = db.relationship('ContentLevel', back_populates='contents')
 
-    def __init__(self, case, c1id, c2id, uid, clid, date, modificationstate, modificationdate, filepath):
+    def __init__(self, case, c1id, c2id, uid, u2id, clid, date, modification_state, modification_date, filepath):
         self.case = case
         self.c1id = c1id
         self.c2id = c2id
         self.uid = uid
+        self.u2id = u2id
         self.date = date
         self.clid = clid
-        self.modificationstate = modificationstate
-        self.modificationdate = modificationdate
+        self.modification_state = modification_state
+        self.modification_date = modification_date
         self.filepath = filepath
 
     def __repr__(self):
-        return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',clid='%s',date='%s',modificationstate='%s',modificationdate='%s')>" \
-               % (self.id, self.case, self.c1id, self.c2id, self.uid, self.clid, self.date, self.modificationstate,
-                  self.modificationdate)
+        return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',u2id='%s',clid='%s',date='%s',\
+                modification_state='%s',modification_date='%s')>" % \
+               (self.id, self.case, self.c1id, self.c2id, self.uid, self.u2id, self.clid, self.date,
+                self.modification_state, self.modification_date)
 
 
 # 表扬登记表，情况，情况类型编号，单位编号，发生日期，图片路径
@@ -148,24 +172,27 @@ class Praise(db.Model):
     case = db.Column(db.Text)
     c1id = db.Column(db.Integer, db.ForeignKey('category1.id'))
     uid = db.Column(db.Integer, db.ForeignKey('unit.id'))
+    u2id = db.Column(db.Integer, db.ForeignKey('unit2.id'))
     plid = db.Column(db.Integer, db.ForeignKey('praise_level.id'))
     date = db.Column(db.Date)
     filepath = db.Column(db.String(256))
     category1 = db.relationship('Category1', back_populates='praises')
     unit = db.relationship('Unit', back_populates='praises')
+    unit2 = db.relationship('Unit2', back_populates='praises')
     praise_level = db.relationship('PraiseLevel', back_populates='praises')
 
-    def __init__(self, case, c1id, uid, plid, date, filepath):
+    def __init__(self, case, c1id, uid, u2id, plid, date, filepath):
         self.case = case
         self.c1id = c1id
         self.uid = uid
+        self.u2id = u2id
         self.plid = plid
         self.date = date
         self.filepath = filepath
 
     def __repr__(self):
-        return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',plid='%s',date='%s')>" \
-               % (self.id, self.case, self.c1id, self.uid, self.plid, self.date)
+        return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',u2id='%s',plid='%s',date='%s')>" \
+               % (self.id, self.case, self.c1id, self.uid, self.u2id, self.plid, self.date)
 
 
 # 相关文档表，文档名称，文档路径，文档类型
@@ -199,6 +226,7 @@ class Filetype(db.Model):
         return "<Filetype(id='%s', filetype='%s')>" % (self.id, self.typename)
 
 
+# 奖章信息表
 class Badge(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     badge_name = db.Column(db.String(50))
@@ -235,6 +263,7 @@ class Badge(db.Model):
         self.bt_id = bt_id
 
 
+# 奖章分类表
 class BadgeType(db.Model):
     __tablename__ = 'badgetype'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -247,3 +276,5 @@ class BadgeType(db.Model):
         self.cat_1_name = cat_1_name
         self.cat_2_name = cat_2_name
         self.typename = typename
+
+

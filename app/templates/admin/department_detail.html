@@ -33,7 +33,7 @@
                         </thead>
                         <tbody>
                             {% for department in departments %}
-                                {{ mcr.tr_department_detail(loop.index,department.id,department.unit.unitname,department.role,
+                                {{ mcr.tr_department_detail(loop.index,department.id,department.unit.unit_name,department.role,
                                 department.username,department.password_hash[13:23]) }}
                             {% endfor %}
                         </tbody>

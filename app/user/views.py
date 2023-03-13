@@ -97,7 +97,7 @@ def video_watch(fid):
 def change_state():
     id = request.args.get('id')
     content = Content.query.filter_by(id=id).first()
-    content.modificationstate = 1
+    content.modification_state = 1
     db.session.commit()
     return redirect(url_for('user.index'))
 
@@ -141,8 +141,7 @@ class DetailView(MethodView):
         uid = current_user.uid
         c1id = int(request.args.get('category1')) if request.args.get('category1') else None
         c2id = int(request.args.get('category2')) if request.args.get('category2') else None
-        modificationstate = int(request.args.get('modificationstate')) if request.args.get(
-            'modificationstate') else None
+        modification_state = int(request.args.get('modification_state')) if request.args.get('modification_state') else None
         page = int(request.args.get('page', 1))  # 获取第‘page’页数据
         # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
         datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
@@ -161,8 +160,8 @@ class DetailView(MethodView):
         if uid:
             paginate = paginate.filter_by(uid=uid)
         # 根据是否选择整改状态确定过滤方式
-        if modificationstate:
-            paginate = paginate.filter_by(modificationstate=modificationstate)
+        if modification_state is not None:
+            paginate = paginate.filter_by(modification_state=modification_state)
         # 根据是否选择日期范围确定过滤方式
         if datefilter:
             paginate = paginate.filter(Content.date.between(datefilter[0], datefilter[1]))

@@ -300,7 +300,7 @@
                             <select class="form-control" name="unit" id="unit">
                                 <option selected="selected" style='display: none' value=''>请选择（不能为空）</option>
                                 {% for unit in units %}
-                                    <option value="{{ unit['id'] }}">{{ unit['unitname'] }}</option>
+                                    <option value="{{ unit['id'] }}">{{ unit['unit_name'] }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -473,7 +473,6 @@ jQuery(function() {
         disableGlobalDnd: true,
 
         chunked: true,
-        // TODO
         server: '{{ url_for('admin.upload') }}',
         fileNumLimit: fileNumLimit,
         fileSizeLimit: fileSizeLimit,

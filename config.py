@@ -12,6 +12,7 @@ UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER')
 MAX_CONTENT_LENGTH = 128 * 1024 * 1024  # 128MB
 IMAGE_ALLOWED_EXTENTIONS = ['.jpg', '.png', '.gif', '.jpeg']
 
+
 class BaseConfig:
     # SQLALCHEMY配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -15,7 +15,7 @@
                                 <select class="form-control" name="unit" id="unit">
                                     <option selected="selected" style='display: none' value=''>选择单位</option>
                                     {% for unit in units %}
-                                        <option value="{{ unit['id'] }}">{{ unit['unitname'] }}</option>
+                                        <option value="{{ unit['id'] }}">{{ unit['unit_name'] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -82,7 +82,7 @@
                         </thead>
                         <tbody>
                             {% for con in paginate.items %}
-                                {{ mcr.tr_praise_detail(loop.index,con.case,con.unit.unitname,con.category1.category,
+                                {{ mcr.tr_praise_detail(loop.index,con.case,con.unit.unit_name,con.category1.category,
                                 con.praise_level.level_name,con.date,con.filepath,con.id) }}
                             {% endfor %}
                         </tbody>

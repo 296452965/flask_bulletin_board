@@ -16,7 +16,7 @@
 {#                                <select class="form-control" name="unit" id="unit">#}
 {#                                    <option selected="selected" style='display: none' value=''>选择单位</option>#}
 {#                                    {% for unit in units %}#}
-{#                                        <option value="{{ unit['id'] }}">{{ unit['unitname'] }}</option>#}
+{#                                        <option value="{{ unit['id'] }}">{{ unit['unit_name'] }}</option>#}
 {#                                    {% endfor %}#}
 {#                                </select>#}
 {#                            </div>#}
@@ -45,7 +45,7 @@
 {#                                </select>#}
 {#                            </div>#}
 {#                            <div class="col-md-2">#}
-{#                                <select class="form-control" name="modificationstate" id="modificationstate">#}
+{#                                <select class="form-control" name="modification_state" id="modification_state">#}
 {#                                    <option selected="selected" style='display: none' value=''>选择整改情况</option>#}
 {#                                    <option value="0">未整改</option>#}
 {#                                    <option value="1">整改待确认</option>#}
@@ -99,8 +99,8 @@
                         <tbody>
                             {% for con in paginate.items %}
                                 {{ mcr.tr_detail_user(loop.index,con.case,con.category1.category,
-                                con.category2.category,con.content_level.level_name,con.date,con.modificationstate,
-                                con.modificationdate,con.filepath,con.id) }}
+                                con.category2.category,con.content_level.level_name,con.date,con.modification_state,
+                                con.modification_date,con.filepath,con.id) }}
                             {% endfor %}
                         </tbody>
                     </table>

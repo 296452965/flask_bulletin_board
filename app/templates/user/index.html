@@ -2,7 +2,7 @@
 {% extends 'user/base.html' %}
 {% import 'macro.html' as mcr %}
 {% block page_title %}
-    <span class="navbar-page-title"> {{ current_user.unit.unitname }}首页 </span>
+    <span class="navbar-page-title"> {{ current_user.unit.unit_name }}首页 </span>
 {% endblock %}
 {% block content %}
     <div class="container-fluid">
@@ -112,7 +112,7 @@
                                 <tbody>
                                 {% for con in contents.items %}
                                     {{ mcr.tr_user_index(loop.index,con.problem,con.category1.category,
-                        con.category2.category,con.date,con.modificationstate,con.modificationdate,con.id) }}
+                        con.category2.category,con.date,con.modification_state,con.modification_date,con.id) }}
                                 {% endfor %}
                                 </tbody>
                             </table>

@@ -14,7 +14,7 @@
     </tr>
 {% endmacro %}
 {# 问题管理-问题列表页表格内容填写宏 #}
-{% macro tr_detail(index,problem,unitname,category1,category2,level_name,date,modificationstate,modificationdate,filepath,id) %}
+{% macro tr_detail(index,problem,unitname,category1,category2,level_name,date,modification_state,modification_date,filepath,id) %}
     <tr>
         <td>
             <label class="lyear-checkbox checkbox-primary">
@@ -28,11 +28,11 @@
         <td>{{ category2 }}</td>
         <td>{{ level_name }}</td>
         <td>{{ date }}</td>
-        <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
-        <td>{{ modificationdate if modificationdate else '' }}</td>
+        <td class="text-{{ 'success' if modification_state == 2 else ('warning' if modification_state == 1 else 'danger') }}">{{ '已整改' if modification_state == 2 else ('整改待确认' if modification_state == 1 else '未整改') }}</td>
+        <td>{{ modification_date if modification_date else '' }}</td>
         <td>
             <div class="btn-group">
-                <a class="{{ "btn btn-xs btn-yellow" if modificationstate != 2 else "btn btn-xs btn-yellow disabled" }}"
+                <a class="{{ "btn btn-xs btn-yellow" if modification_state != 2 else "btn btn-xs btn-yellow disabled" }}"
                    href="#" title="编辑" data-toggle="modal" data-target="#contentModal{{ id }}"><i class="mdi mdi-pencil"></i></a>
                 <div class="modal fade" id="contentModal{{ id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
@@ -47,14 +47,14 @@
                                     <div class="form-group">
                                         <input type="hidden" name="id" value="{{ id }}">
                                         <label class="col-md-8">确认整改（已整改请勾选，未整改不勾选）</label>
-                                        <input type="checkbox" name="modificationstate"
-                                               id="modificationstate" {{ 'checked = checked' if modificationstate == 2 else '' }}>
+                                        <input type="checkbox" name="modification_state"
+                                               id="modification_state" {{ 'checked = checked' if modification_state == 2 else '' }}>
                                     </div>
                                     <div class="form-group">
                                         <label class="col-md-12">整改日期</label>
                                         <input class="form-control js-datepicker m-b-10" type="text"
-                                               id="modificationdate" name="modificationdate"
-                                               placeholder="{{ modificationdate if modificationdate else '注意：提交整改日期不能为空' }}"
+                                               id="modification_date" name="modification_date"
+                                               placeholder="{{ modification_date if modification_date else '注意：提交整改日期不能为空' }}"
                                                value="" data-date-format="yyyy-mm-dd">
                                     </div>
                                 </div>
@@ -204,17 +204,17 @@
     </tr>
 {% endmacro %}
 {# 用户页面首页表格内容填写宏 #}
-{% macro tr_user_index(index,problem,category1,category2,date,modificationstate,modificationdate,id) %}
+{% macro tr_user_index(index,problem,category1,category2,date,modification_state,modification_date,id) %}
     <tr>
         <td>{{ index }}</td>
         <td>{{ problem }}</td>
         <td>{{ category1 }}</td>
         <td>{{ category2 }}</td>
         <td>{{ date }}</td>
-        <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
-        <td>{{ modificationdate if modificationdate else '' }}</td>
+        <td class="text-{{ 'success' if modification_state == 2 else ('warning' if modification_state == 1 else 'danger') }}">{{ '已整改' if modification_state == 2 else ('整改待确认' if modification_state == 1 else '未整改') }}</td>
+        <td>{{ modification_date if modification_date else '' }}</td>
         <td>
-            <a class="{{ "btn btn-xs btn-success" if modificationstate != 2 else "btn btn-xs btn-success disabled" }}"
+            <a class="{{ "btn btn-xs btn-success" if modification_state != 2 else "btn btn-xs btn-success disabled" }}"
                href="{{ url_for('user.change_state', id=id) }}" title="提交整改状态" data-toggle="tooltip"
                onclick="return confirm('确定提交整改状态吗?')"><i class="mdi mdi-arrow-top-right"></i>提交整改</a>
         </td>
@@ -240,7 +240,7 @@
     </tr>
 {% endmacro %}
 {# 问题管理-用户问题列表页表格内容填写宏 #}
-{% macro tr_detail_user(index,problem,category1,category2,level_name,date,modificationstate,modificationdate,filepath,id) %}
+{% macro tr_detail_user(index,problem,category1,category2,level_name,date,modification_state,modification_date,filepath,id) %}
     <tr>
         <td>
             <label class="lyear-checkbox checkbox-primary">
@@ -253,8 +253,8 @@
         <td>{{ category2 }}</td>
         <td>{{ level_name }}</td>
         <td>{{ date }}</td>
-        <td class="text-{{ 'success' if modificationstate == 2 else ('warning' if modificationstate == 1 else 'danger') }}">{{ '已整改' if modificationstate == 2 else ('整改待确认' if modificationstate == 1 else '未整改') }}</td>
-        <td>{{ modificationdate if modificationdate else '' }}</td>
+        <td class="text-{{ 'success' if modification_state == 2 else ('warning' if modification_state == 1 else 'danger') }}">{{ '已整改' if modification_state == 2 else ('整改待确认' if modification_state == 1 else '未整改') }}</td>
+        <td>{{ modification_date if modification_date else '' }}</td>
         <td>
             <div class="btn-group">
                 <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
@@ -301,7 +301,7 @@
                         </div>
                     </div>
                 </div>
-            <a class="{{ "btn btn-xs btn-success" if modificationstate != 2 else "btn btn-xs btn-success disabled" }}"
+            <a class="{{ "btn btn-xs btn-success" if modification_state != 2 else "btn btn-xs btn-success disabled" }}"
                href="{{ url_for('user.change_state', id=id) }}" title="提交整改状态" data-toggle="tooltip"
                onclick="return confirm('确定提交整改状态吗?')"><i class="mdi mdi-arrow-top-right"></i>提交整改</a>
         </td>

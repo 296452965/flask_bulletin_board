@@ -136,8 +136,7 @@ class DetailView(MethodView):
         uid = int(request.args.get('unit')) if request.args.get('unit') else None
         c1id = int(request.args.get('category1')) if request.args.get('category1') else None
         c2id = int(request.args.get('category2')) if request.args.get('category2') else None
-        modificationstate = int(request.args.get('modificationstate')) if request.args.get(
-            'modificationstate') else None
+        modification_state = int(request.args.get('modification_state')) if request.args.get('modification_state') else None
         page = int(request.args.get('page', 1))  # 获取第‘page’页数据
         # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
         datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
@@ -156,8 +155,8 @@ class DetailView(MethodView):
         if uid:
             paginate = paginate.filter_by(uid=uid)
         # 根据是否选择整改状态确定过滤方式
-        if modificationstate:
-            paginate = paginate.filter_by(modificationstate=modificationstate)
+        if modification_state is not None:
+            paginate = paginate.filter_by(modification_state=modification_state)
         # 根据是否选择日期范围确定过滤方式
         if datefilter:
             paginate = paginate.filter(Content.date.between(datefilter[0], datefilter[1]))
@@ -192,7 +191,7 @@ class AddView(MethodView):
         date = request.form['date']
         case = request.form['case']
         filepath = request.form['pics']
-        content = Content(case, c1id, c2id, uid, clid, date, modificationstate=0, modificationdate=None,
+        content = Content(case, c1id, c2id, uid, clid, date, modification_state=0, modification_date=None,
                           filepath=filepath)
         unit = Unit.query.filter_by(id=uid).first()
         content_level = ContentLevel.query.filter_by(id=clid).first()
@@ -230,11 +229,11 @@ class UpdateView(MethodView):
     @is_admin
     def post():
         content_id = request.form['id']
-        date = request.form['modificationdate']
-        state = 2 if request.form['modificationstate'] == 'on' else 0
+        date = request.form['modification_date']
+        state = 2 if request.form['modification_state'] == 'on' else 0
         edit_con = Content.query.filter_by(id=content_id).first()
-        edit_con.modificationstate = state
-        edit_con.modificationdate = date
+        edit_con.modification_state = state
+        edit_con.modification_date = date
         db.session.commit()
         flash('信息修改成功')
         return redirect(request.referrer)
@@ -266,9 +265,9 @@ class ExportView(MethodView):
         if contents is not None:
             for i in range(len(contents)):
                 content = contents[i]
-                lst_content = [content.id, content.unit.unitname, content.category1.category,
-                               content.category2.category, content.case, content.date, content.modificationstate,
-                               content.modificationdate]
+                lst_content = [content.id, content.unit.unit_name, content.category1.category,
+                               content.category2.category, content.case, content.date, content.modification_state,
+                               content.modification_date]
                 worksheet.write_row(i + 1, 0, lst_content)
         workbook.close()
         out.seek(0)
