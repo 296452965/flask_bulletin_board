@@ -4,13 +4,15 @@ from flask_login import login_required
 
 from .forms import DepartmentForm
 from .models import Department, db
-from app.admin.models import Unit
 from . import department
+from app.admin.models import Unit
+from app.decorators import is_admin
 
 
 # 部门详情
 @department.route('detail/')
 @login_required
+@is_admin
 def detail():
     departments = Department.query.all()
     return render_template('admin/department_detail.html', departments=departments)
@@ -20,17 +22,20 @@ def detail():
 class DepartmentCreatOrEdit(MethodView):
     @staticmethod
     @login_required
+    @is_admin
     def get(id=None):
         department = Department() if not id else Department.query.filter_by(id=id).first()
         form = DepartmentForm(request.form, obj=department)
-        # 下拉选项
         form.uid.choices = [(u.id, u.unit_name) for u in Unit.query.all()]
         return render_template('admin/department_edit.html', form=form)
 
     @staticmethod
     @login_required
+    @is_admin
     def post(id=None):
-        form = DepartmentForm(request.form)
+        print(request.form)
+        form = DepartmentForm(formdata=request.form)
+        print(form)
         department = Department() if not id else Department.query.filter_by(id=id).first()
         form.populate_obj(department)
         department.set_password(form.password.data)
@@ -48,6 +53,7 @@ class DepartmentCreatOrEdit(MethodView):
 class DepartmentDelete(MethodView):
     @staticmethod
     @login_required
+    @is_admin
     def get(id=None):
         if id:
             department = Department.query.filter_by(id=id).first()

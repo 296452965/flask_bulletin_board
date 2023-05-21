@@ -147,17 +147,18 @@ class Content(db.Model):
     unit2 = db.relationship('Unit2', back_populates='contents')
     content_level = db.relationship('ContentLevel', back_populates='contents')
 
-    def __init__(self, case, c1id, c2id, uid, u2id, clid, date, modification_state, modification_date, filepath):
+    def __init__(self, case, c1id, c2id, uid, clid, date, modification_state, modification_date, filepath):
         self.case = case
         self.c1id = c1id
         self.c2id = c2id
         self.uid = uid
-        self.u2id = u2id
         self.date = date
         self.clid = clid
         self.modification_state = modification_state
         self.modification_date = modification_date
         self.filepath = filepath
+        unit = Unit.query.filter_by(id=uid).first()
+        self.u2id = unit.u2id
 
     def __repr__(self):
         return "<Content(id='%s',case='%s',c1id='%s',c2id='%s',uid='%s',u2id='%s',clid='%s',date='%s',\
@@ -181,14 +182,15 @@ class Praise(db.Model):
     unit2 = db.relationship('Unit2', back_populates='praises')
     praise_level = db.relationship('PraiseLevel', back_populates='praises')
 
-    def __init__(self, case, c1id, uid, u2id, plid, date, filepath):
+    def __init__(self, case, c1id, uid, plid, date, filepath):
         self.case = case
         self.c1id = c1id
         self.uid = uid
-        self.u2id = u2id
         self.plid = plid
         self.date = date
         self.filepath = filepath
+        unit = Unit.query.filter_by(id=uid).first()
+        self.u2id = unit.u2id
 
     def __repr__(self):
         return "<Praise(id='%s',case='%s',c1id='%s',uid='%s',u2id='%s',plid='%s',date='%s')>" \

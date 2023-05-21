@@ -15,6 +15,9 @@ from .forms import PasswordForm
 @login_required
 def index():
     uid = current_user.uid
+    u2id = current_user.u2id
+    print('uid:',uid)
+    print('u2id:',u2id)
     per_page = 10
     page = int(request.args.get('page', 1))
     contents = Content.query.filter_by(uid=uid).paginate(page, per_page)

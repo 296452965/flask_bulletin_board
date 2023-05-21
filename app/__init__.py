@@ -10,7 +10,7 @@ from app.department.models import db
 def create_app(config_name=None):
     app = Flask(__name__, static_url_path='')
     configure_app(app, config_name)  # 导入参数设置
-    db.init_app(app)  # db初始化绑定app对象
+    db.init_app(app)  # db初始化绑定app对象，工厂模式的初始化
     migrate = Migrate(app, db)
     login_manager = LoginManager(app)
     login_manager.login_view = 'login.login'

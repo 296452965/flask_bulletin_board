@@ -1,4 +1,4 @@
-from app.admin.models import db
+from app.admin.models import db, Unit, Unit2
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 db = db  # 赋值给一变量，否则系统会只找到admin应用的db
@@ -15,11 +15,15 @@ class Department(db.Model, UserMixin):
     unit2 = db.relationship('Unit2', back_populates='departments')
     role = db.relationship('Role', back_populates='departments')
 
-    def __init__(self, username=None, uid=None, u2id=None, rid=None):
+    def __init__(self, username=None, uid=None, rid=None):
         self.username = username
         self.uid = uid
-        self.u2id = u2id
         self.rid = rid
+        if uid:
+            unit = Unit.query.filter_by(id=uid).first()
+            self.u2id = unit.u2id
+        else:
+            self.u2id = None
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

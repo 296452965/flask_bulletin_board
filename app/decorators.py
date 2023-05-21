@@ -6,7 +6,7 @@ def is_admin(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if session.get('role', None) != 'admin':
+        if session.get('role', None) != '管理员':
             flash('非法访问')
             return redirect(url_for('login.login'))
         return f(*args, **kwargs)

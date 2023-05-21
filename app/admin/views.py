@@ -3,18 +3,16 @@ from flask.views import MethodView
 from flask_login import login_required, current_user
 from io import BytesIO
 import time
-import xlsxwriter
 import os
+import xlsxwriter
 from app.decorators import is_admin
-from . import admin
 from .models import *
 from .forms import DocumentForm
+from .exts import ChartData
 from config import UPLOAD_FOLDER
-
 
 # 函数视图(FBV)
 # 呈现特定目录下的资源
-@admin.route('/document/<filename>')
 @login_required
 def render_file(filename):
     try:
@@ -23,8 +21,7 @@ def render_file(filename):
         return '该文件不存在'
 
 
-# Ajax响应二级列表
-@admin.route('c2data', methods=['POST'])
+# Ajax响应，返回二级分类列表
 def change_select_field():
     if request.method == "POST":
         data = request.get_json()
@@ -38,8 +35,33 @@ def change_select_field():
         return jsonify(li)
 
 
-# Ajax响应二级列表
-@admin.route('case/pic', methods=['POST'])
+# Ajax响应，返回单位下拉列表
+def change_unit_field():
+    if request.method == "POST":
+        data = request.get_json()
+        level = data['level']
+        print('level', type(level))
+        if level == 1:
+            print('choose unit1')
+            li = []
+            for u in Unit.query.all():
+                dic = {}
+                dic['id'] = u.id
+                dic['unit_name'] = u.unit_name
+                li.append(dic.copy())
+            return jsonify(li)
+        elif level == 2:
+            print('choose unit2')
+            li = []
+            for u in Unit2.query.all():
+                dic = {}
+                dic['id'] = u.id
+                dic['unit_name'] = u.unit_name
+                li.append(dic.copy())
+            return jsonify(li)
+
+
+# Ajax响应，返回情况图片列表
 def case_pic():
     if request.method == "POST":
         data = request.get_json()
@@ -56,7 +78,6 @@ def case_pic():
 
 
 # Ajax获取首页柱形图数据
-@admin.route('index/bar', methods=["GET"])
 def index_bar():
     li = []
     for c in DataBar.query.all():
@@ -66,7 +87,6 @@ def index_bar():
 
 
 # Ajax获取首页线形图数据
-@admin.route('index/line', methods=["GET"])
 def index_line():
     li = []
     for c in DataLine.query.all():
@@ -76,23 +96,13 @@ def index_line():
 
 
 # 个人信息编辑页面
-@admin.route('profile/')
 @login_required
 @is_admin
 def profile():
     return render_template('admin/profile_admin.html')
 
 
-# 图表分析页面
-@admin.route('analysis/')
-@login_required
-@is_admin
-def analysis():
-    return render_template('admin/content_analysis.html')
-
-
 # 管理员首页
-@admin.route('index/')
 @login_required
 @is_admin
 def index():
@@ -101,7 +111,6 @@ def index():
 
 
 # WebUploader上传页面
-@admin.route('upload/', methods=['POST'])
 @login_required
 @is_admin
 def upload():
@@ -129,7 +138,7 @@ class DetailView(MethodView):
     @login_required
     @is_admin
     def get():
-        # 前端传参unit,category1,category2,page,datefilter
+        # 获取前端传参：level,unit/unit2,category1,category2,content_level,modification_state,datefilter,page
         # flash(current_user.role)
         # flash(current_user.username)
         clid = int(request.args.get('content_level')) if request.args.get('content_level') else None
@@ -193,9 +202,9 @@ class AddView(MethodView):
         filepath = request.form['pics']
         content = Content(case, c1id, c2id, uid, clid, date, modification_state=0, modification_date=None,
                           filepath=filepath)
-        unit = Unit.query.filter_by(id=uid).first()
-        content_level = ContentLevel.query.filter_by(id=clid).first()
 
+        content_level = ContentLevel.query.filter_by(id=clid).first()
+        unit = Unit.query.filter_by(id=uid).first()
         # 分数数据格式转换
         point_list = eval(unit.point)
         month_index = int(date.split('-')[1]) - 1
@@ -274,6 +283,67 @@ class ExportView(MethodView):
         file_name = time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + "数据.xlsx"
         res = send_file(out, as_attachment=True, attachment_filename=file_name)
         return res
+
+
+# 问题信息图表分析页面
+class AnalysisView(MethodView):
+    @staticmethod
+    @login_required
+    @is_admin
+    def get():
+        # step1:
+        # 获取前端传参：level,unit/unit2,category1,category2,content_level,modification_state,datefilter
+        level = int(request.args.get('level')) if request.args.get('level') else None
+        # unit/unit2参数只取一种，统一用变量uid
+        if level == 1:
+            uid = int(request.args.get('unit')) if request.args.get('unit') else None
+        elif level == 2:
+            uid = int(request.args.get('unit2')) if request.args.get('unit2') else None
+        else:
+            uid = None
+        clid = int(request.args.get('content_level')) if request.args.get('content_level') else None
+        c1id = int(request.args.get('category1')) if request.args.get('category1') else None
+        c2id = int(request.args.get('category2')) if request.args.get('category2') else None
+        modification_state = int(request.args.get('modification_state')) if request.args.get('modification_state') else None
+        # 分割日期范围,datefilter[0]：开始时间；datefilter[1]：结束时间
+        datefilter = request.args.get('datefilter').split(' - ') if request.args.get('datefilter') else None
+
+        # step2:
+        # 根据问题分类选择确定过滤方式
+        if c2id:
+            rst = Content.query.filter_by(c1id=c1id, c2id=c2id)
+        elif c1id:
+            rst = Content.query.filter_by(c1id=c1id)
+        else:
+            rst = Content.query.filter_by()
+        # 根据是否选择分级确定过滤方式
+        if clid:
+            rst = rst.filter_by(clid=clid)
+        # 根据是否选择单位以及单位层级确定过滤方式
+        if level == 1:
+            rst = rst.filter_by(uid=uid)
+        elif level == 2:
+            rst = rst.filter_by(u2id=uid)
+        # 根据是否选择整改状态确定过滤方式
+        if modification_state is not None:
+            rst = rst.filter_by(modification_state=modification_state)
+        # 根据是否选择日期范围确定过滤方式
+        if datefilter:
+            rst = rst.filter(Content.date.between(datefilter[0], datefilter[1]))
+
+        # step3:
+        # 渲染页面并返回
+        category1s = Category1.query.all()
+        content_levels = ContentLevel.query.all()
+        # 调试用
+        for item in rst:
+            print(item.date)
+            print(type(item.date))
+
+        chart_data = ChartData(rst)
+        line_data = chart_data.line_data
+        return render_template('admin/content_analysis.html', rst=rst, level=level, uid=uid, category1s=category1s,
+                               content_levels=content_levels, c1id=c1id, c2id=c2id, clid=clid, line_data=line_data)
 
 
 # 文档上传页面
@@ -412,6 +482,7 @@ class PraiseAddView(MethodView):
         return redirect(url_for('admin.praise_add'))
 
 
+# 表扬信息删除
 class PraiseDelView(MethodView):
     @staticmethod
     @login_required
@@ -423,19 +494,3 @@ class PraiseDelView(MethodView):
         flash('信息删除成功')
         return redirect(url_for('admin.praise_detail'))
 
-
-# 问题管理URL
-admin.add_url_rule('add/', view_func=AddView.as_view('content_add'))
-admin.add_url_rule('del/<int:id>/', view_func=DelView.as_view('content_delete'))
-admin.add_url_rule('detail/', view_func=DetailView.as_view('content_detail'))
-admin.add_url_rule('edit/', view_func=UpdateView.as_view('content_edit'))
-admin.add_url_rule('detail/export/', view_func=ExportView.as_view('export_data'))
-# 文件管理URL
-admin.add_url_rule('document_upload/', view_func=DocumentUploadOrEdit.as_view('document_upload'))
-admin.add_url_rule('document_edit/<int:id>', view_func=DocumentUploadOrEdit.as_view('document_edit'))
-admin.add_url_rule('document_detail/', view_func=DocumentDetail.as_view('document_detail'))
-admin.add_url_rule('document_delete/<int:id>', view_func=DocumentDelete.as_view('document_delete'))
-# 表扬管理URL
-admin.add_url_rule('praise_detail/', view_func=PraiseDetailView.as_view('praise_detail'))
-admin.add_url_rule('praise_add/', view_func=PraiseAddView.as_view('praise_add'))
-admin.add_url_rule('praise_del/<int:id>/', view_func=PraiseDelView.as_view('praise_delete'))

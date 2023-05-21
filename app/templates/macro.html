@@ -67,14 +67,17 @@
                     </div>
                 </div>
                 <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
-                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i></a>
-                <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
-                     aria-labelledby="exampleModalLabel">
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"
+                   data-url="{{ url_for('admin.case_pic') }}">
+                    <i class="mdi mdi-eye"></i>
+                </a>
+                <div class="modal fade" id="picModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                        aria-hidden="true">&times;</span></button>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
                                 <h4 class="modal-title" id="exampleModalLabel">问题图片</h4>
                             </div>
                             <div class="modal-body">
@@ -134,7 +137,9 @@
             <div class="btn-group">
                 <a class="btn btn-xs btn-yellow" href="#" title="编辑"><i class="mdi mdi-pencil"></i></a>
                 <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
-                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i></a>
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"
+                   data-url="{{ url_for('admin.case_pic') }}">
+                    <i class="mdi mdi-eye"></i></a>
                 <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
                      aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
@@ -258,7 +263,9 @@
         <td>
             <div class="btn-group">
                 <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
-                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i>查看图片</a>
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"
+                   data-url="{{ url_for('admin.case_pic') }}">
+                    <i class="mdi mdi-eye"></i>查看图片</a>
             </div>
             <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
                      aria-labelledby="exampleModalLabel">
@@ -324,7 +331,9 @@
         <td>
             <div class="btn-group">
                 <a class="{{ "btn btn-xs btn-warning" if filepath else "btn btn-xs btn-warning disabled" }}"
-                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"><i class="mdi mdi-eye"></i></a>
+                   href="#" title="{{filepath}}" data-toggle="modal" data-target="#picModal" data-case-id="{{ id }}"
+                   data-url="{{ url_for('admin.case_pic') }}">
+                   <i class="mdi mdi-eye"></i>查看图片</a>
                 <div class="modal fade" id="picModal" tabindex="-1" role="dialog"
                      aria-labelledby="exampleModalLabel">
                     <div class="modal-dialog" role="document">
