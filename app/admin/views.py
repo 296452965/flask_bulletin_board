@@ -11,6 +11,7 @@ from .forms import DocumentForm
 from .exts import ChartData
 from config import UPLOAD_FOLDER
 
+
 # 函数视图(FBV)
 # 呈现特定目录下的资源
 @login_required
@@ -79,11 +80,10 @@ def case_pic():
 
 # Ajax获取首页柱形图数据
 def index_bar():
-    li = []
-    for c in DataBar.query.all():
-        dic = {'data': c.data, 'label': c.label}
-        li.append(dic.copy())
-    return jsonify(li)
+    rst = Content.query.order_by(Content.uid).all()
+    chart_data = ChartData(rst)
+    bar_data = chart_data.bar_data
+    return jsonify(bar_data)
 
 
 # Ajax获取首页线形图数据
@@ -107,7 +107,11 @@ def profile():
 @is_admin
 def index():
     print('role:', session.get('role'))
-    return render_template('admin/index_admin.html')
+    content_num = len(Content.query.filter(Content.date==time.strftime('%Y-%m-%d')).all())
+    praise_num = len(Praise.query.filter(Praise.date==time.strftime('%Y-%m-%d')).all())
+    document_num = len(Document.query.all())
+    return render_template('admin/index_admin.html', content_num=content_num, praise_num=praise_num,
+                           document_num=document_num)
 
 
 # WebUploader上传页面
@@ -340,7 +344,8 @@ class AnalysisView(MethodView):
             print(item.date)
             print(type(item.date))
 
-        chart_data = ChartData(rst)
+        rst_timeline = rst.order_by('date').all()
+        chart_data = ChartData(rst_timeline)
         line_data = chart_data.line_data
         return render_template('admin/content_analysis.html', rst=rst, level=level, uid=uid, category1s=category1s,
                                content_levels=content_levels, c1id=c1id, c2id=c2id, clid=clid, line_data=line_data)
