@@ -12,8 +12,9 @@
 - 使用了flask-sqlalchemy
 - 使用了flask-wtf
 ## 项目如何运行？
-- 首先安装项目依赖
-- bulletin_board.py是入口文件，运行即可。
+- 首先根据requirements.txt文件安装项目依赖
+- 在pycharm中调试运行的话，需要配置工作目录
+- 需要和apache服务器配合使用的话，参考博文[【Flask实战】Apache+WSGI在内网Windows环境下部署Flask项目（艰难爬坑总结）](https://blog.csdn.net/chengyikang20/article/details/124433033)
 ## 效果展示
 ![首页](https://user-images.githubusercontent.com/31033705/159453136-67787fa9-ee6a-44dc-a554-c9108dc2f0e2.png)
 ![表格页面](https://user-images.githubusercontent.com/31033705/159453554-8d9332fb-c6a8-4c07-bad8-9432d0c5ff90.png)
